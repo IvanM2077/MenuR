@@ -4,6 +4,8 @@ de datos con sql
 y poder hacer las consultas SQL
 
 '''
+import DB
+
 
 class OrderNtoN:
     def _init_(self, Id, Usuario, Products, Delivery, PayM, PayConfirm):
@@ -15,5 +17,5 @@ class OrderNtoN:
         self.payconfirm = PayConfirm
 
     def SearchOrder(self):
-        DB.C
+        DB.ConsultaOrdenesDelEmpleado(self.id)
         pass
