@@ -13,3 +13,7 @@ class OrderNtoN:
         self.delivery = Delivery
         self.paym = PayM
         self.payconfirm = PayConfirm
+
+    def SearchOrder(self):
+        DB.C
+        pass

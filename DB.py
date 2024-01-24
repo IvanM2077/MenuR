@@ -26,3 +26,6 @@ def consultaPassword(password):
 
 def consultaEmail(email):
     pass
+
+def ConsultaOrdenesDelEmpleado(id):
+    pass
