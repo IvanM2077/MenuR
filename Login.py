@@ -5,12 +5,13 @@ import Menu
 
 
 class Login:
-    def _init_(self, Email, Password, Entry=False):
+    def __init__(self,Email, Password):
         self.email = Email
         self.password = Password
-        self.entry = Entry
+        self.entry = False
         pass
-
+    def __str__(self):
+        return f"{self.email}"
 
     def getPasword(self):
         return self.password
@@ -20,13 +21,16 @@ class Login:
         return self.email
 
     def consultaEmailandPass(self):
-        email = Login.getEmail()
         try:
-            self.entry = DB.consultPasswordAndEmail(self.password, self.email)
-        except:
-            return f"Error "
+            self.entry = DB.consultPasswordAndEmail(str(self.password), str(self.email))
+        except Exception as e:
+            print(f"Error {self.entry} login")
 
-
+    def CheckEntry(self):
+        if self.entry == True:
+            print("Ingresó correctamente")
+        else:
+            print("Error")
 
 
 

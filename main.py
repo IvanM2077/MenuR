@@ -1,5 +1,5 @@
 import math as m
-import Login as L
+import Login
 import User as U
 import OrderNtoN as O
 import sqlite3 as sq
@@ -12,6 +12,12 @@ DB.CreateTableOrderN()
 DB.CreateTableProduct()
 DB.CreateTableUser()
 
+Email='123'
+Password='123'
+Logear = Login.Login(Email,Password)
+Logear.CheckEntry()
+Logear.consultaEmailandPass()
+Logear.CheckEntry()
 
 
 #Ejecución del menu
