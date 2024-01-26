@@ -8,13 +8,12 @@ import DB
 
 
 class OrderNtoN:
-    def _init_(self, Id, Usuario, Products, Delivery, PayM, PayConfirm):
+    def _init_(self, Id, Usuario, Products):
         self.id =Id
         self.usuario =Usuario
-        self.Products = Products
-        self.delivery = Delivery
-        self.paym = PayM
-        self.payconfirm = PayConfirm
+        self.products = Products
+        self.paym = False
+        self.payconfirm = False
 
     def SearchOrder(self):
         DB.ConsultaOrdenesDelEmpleado(self.id)

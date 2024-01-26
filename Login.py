@@ -19,28 +19,16 @@ class Login:
     def getEmail(self):
         return self.email
 
-
-    @classmethod
-    def consultaEmail(cls, email):
+    def consultaEmailandPass(self):
         email = Login.getEmail()
         try:
-            DB.consultaEmail(email)
+            self.entry = DB.consultPasswordAndEmail(self.password, self.email)
         except:
             return f"Error "
 
-        pass
 
 
-    @classmethod
-    def consultaPassword(cls):
-        password = Login.getPasword()
-        try:
-            DB.consultaPassword(password)
 
-        except:
-            return f"Error"
-
-        pass
 
 
     @classmethod
