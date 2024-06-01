@@ -7,17 +7,17 @@ import Menu
 import DB
 
 #Crear bases de datos y tablas
-DB.CreateDB()
-DB.CreateTableOrderN()
-DB.CreateTableProduct()
-DB.CreateTableUser()
+#DB.CreateDB()
+#DB.CreateTableOrderN()
+#DB.CreateTableProduct()
+#DB.CreateTableUser()
 
-Email='123'
-Password='123'
-Logear = Login.Login(Email,Password)
-Logear.CheckEntry()
-Logear.consultaEmailandPass()
-Logear.CheckEntry()
+#Email='123'
+#Password='123'
+#Logear = Login.Login(Email,Password)
+#Logear.CheckEntry()
+#Logear.consultaEmailandPass()
+#Logear.CheckEntry()
 
 
 #Ejecución del menu
