@@ -5,6 +5,7 @@ import InvoiceView as IV
 import ConfirmView as CV
 import RejectView as RV
 import LoginView as LV
+import NewUserView as NUW
 from Infraestructure import ViewConfig as Config
 
 # Dimensiones de la ventana
@@ -26,6 +27,9 @@ class App(tk.Tk):
         # Mostrar la nueva vista
         self.current_view = new_view
         self.current_view.pack()
+    def RegisteNewUserView(self):
+        registerView = NUW.returnNewUserView(self)
+        self.show_view(registerView)
 
     def LoginView(self):
         loginView = LV.returnLoginView(self)

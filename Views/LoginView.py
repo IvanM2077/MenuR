@@ -13,9 +13,14 @@ def returnLoginView(parent):
     lbl = tk.Label(ventana, text="Hola vista de Login")  # Aquí se especifica el contenedor (ventana)
     lbl.pack()
 
+
+
     # Crear y agregar un botón para navegar a la siguiente vista
     btn_navigate = tk.Button(ventana, text="Navegar a la siguiente vista", command=parent.menuView)
     btn_navigate.pack()
+
+    btn_navigate2 = tk.Button(ventana, text="Registrece como usuario nuevo", command=parent.RegisteNewUserView)
+    btn_navigate2.pack()
 
     return ventana
 

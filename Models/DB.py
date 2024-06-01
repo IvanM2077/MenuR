@@ -1,9 +1,10 @@
 import sqlite3 as sq
+from Infraestructure import DatabaseConfig as DBConfig
 #
-nameDB="DBRest.db"
-TableUser="USER"
-TableOrder="OrderToOrder"
-TableProducts="PRODUCTS"
+nameDB, TableUser, TableOrder, TableProducts = DBConfig.getDataBaseNames()
+
+#Patron de desarrollo singleton
+
 
 
 
