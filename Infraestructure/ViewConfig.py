@@ -1,4 +1,4 @@
 def GetDimmentions():
-    Width = 400
-    Height = 400
+    Width = 1280
+    Height = 720
     return Width, Height

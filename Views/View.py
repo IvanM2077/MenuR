@@ -26,6 +26,7 @@ class App(tk.Tk):
 
         # Mostrar la nueva vista
         self.current_view = new_view
+        self.resizable(False, False)
         self.current_view.pack()
     def RegisteNewUserView(self):
         registerView = NUW.returnNewUserView(self)
@@ -55,9 +56,11 @@ class App(tk.Tk):
         rejectView = RV.ReturnRejectView(self)
         self.show_view(rejectView)
 
+    def initialize_app(self):
+        self.LoginView()
+        self.mainloop()
+
 # Crea la instancia de la aplicación
 myapp = App()
-# Mostrar la vista de inicio de sesión
-myapp.LoginView()
-# Iniciar el loop principal de Tkinter
-myapp.mainloop()
+myapp.initialize_app()
+
