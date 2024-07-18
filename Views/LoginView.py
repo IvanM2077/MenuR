@@ -46,10 +46,10 @@ def returnLoginView(parent):
 
     # Botones para ingresar y registrarse
     btn_Login = tk.Button(ventana, text="Ingresar", command=parent.menuView)
-    btn_Login.grid(row=5, column=1, columnspan=6, padx=10, pady=20, sticky='n')  # Ajustar el padding
+    btn_Login.grid(row=5, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
 
     btn_RegisterUser = tk.Button(ventana, text="Regístrese como usuario nuevo", command=parent.RegisteNewUserView)
-    btn_RegisterUser.grid(row=6, column=1, columnspan=6, padx=10, pady=20, sticky='n')  # Ajustar el padding
+    btn_RegisterUser.grid(row=6, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
 
     ventana.pack(fill='both', expand=True)
     return ventana
