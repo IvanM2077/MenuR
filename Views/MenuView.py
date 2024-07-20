@@ -18,7 +18,11 @@ def ReturnMenuView(parent):
 
     # Botón para tomar orden
     btn_MenuOrderView = tk.Button(ventana, text="Tomar Orden", command=parent.menuOrderView, font=("Helvetica", 12))
-    btn_MenuOrderView.grid(row=5, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
+    btn_MenuOrderView.grid(row=2, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
+
+    # Botón para tomar orden
+    btn_InvoiceOrderView = tk.Button(ventana, text="Agregar a la orden", command=parent.invoiceView, font=("Helvetica", 12))
+    btn_InvoiceOrderView.grid(row=2, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
 
     # Botón para nota de la orden
     btn_InvoiceView = tk.Button(ventana, text="Nota de la orden", command=parent.invoiceView, font=("Helvetica", 12))
