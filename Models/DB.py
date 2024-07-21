@@ -7,7 +7,7 @@ nameDB, TableUser, TableOrder, TableProducts = DBConfig.getDataBaseNames()
 
 
 
-
+#<editor-fold desc="CreationDatabase">
 #CREACIÓN DE LA BASE DE DATOS AL INICIALIZAR
 def CreateDB():
     #Creamos un objetoo que realizará la conexión db
@@ -31,6 +31,9 @@ def CreateDB():
 
 
 
+#</editor-fold>
+
+#<editor-fold desc="CreationTables">
 
 #CREACIÓN DE LAS TABLAS
 def CreateTableOrderN():
@@ -84,23 +87,35 @@ def CreateTableUser():
 
 
 
+#</editor-fold>
 
 
 
+#<editor-fold desc="User">
+def createUser(FirstName, LastName, Email, Password):
+    con = sq.connect(nameDB)
+    cur=con.cursor()
+    try:
+        var = consultPasswordAndEmail(Email, Password)
+        #Si existe el usuario devolverá un true, si no, devolverá un false.
+        if(var == True):
+            cur.execute(f''' INSERT INTO {TableUser} VALUES({FirstName}, {LastName}, {Email}, {Password})''')
+            con.commit()
+            con.close()
+            return True
+        else:
+            return False
+    except Exception as e:
+        return False
 
 
+#</editor-fold>
 
-
-
+#<editor-fold desc="Login">
 #CONSULTA EMAIL Y CONTRASEÑA
 def consultPasswordAndEmail(Email,Password):
-    #Creamos una conexión con la base de datos
     con = sq.connect(nameDB)
-    #creamos un objeto cursor que ayudará a realizar acciones y consultas
     cur = con.cursor()
-
-    #Le pasamos al objeto cursor el método execute que ejecutará el Query
-    #Dandole como propiedas los nombres de la tabla de usuarios y los parametros de la función a recibir
     try:
         cur.execute(f'''
                     SELECT * FROM {TableUser} WHERE {TableUser}.Email = ? AND {TableUser}.PassWord = ?
@@ -120,14 +135,27 @@ def consultPasswordAndEmail(Email,Password):
         print("Error no existe el usuario y/o contraseña")
         return False
 
+#</editor-fold>
 
 
 
 
+#<editor-fold desc="Orders">
 
+#</editor-fold>
 
-#
-
-def ConsultaOrdenesDelEmpleado(id):
-    pass
+#<editor-fold desc="Products">
+def getAllProduct():
+    con = sq.connect(nameDB)
+    cur = con.cursor()
+    try:
+        cur.execute(f'''SELECT * FROM {TableProducts} ''')
+        AllProducts=cur.fetchall()
+        con.commit()
+        con.close()
+        return AllProducts
+    except Exception as e:
+        print("Error no existe el usuario y/o contraseña")
+        return False
+#</editor-fold>
 
