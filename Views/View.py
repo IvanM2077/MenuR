@@ -5,6 +5,7 @@ import InvoiceView as IV
 import ConfirmView as CV
 import RejectView as RV
 import LoginView as LV
+import SelectorOrder as SO
 import NewUserView as NUW
 from Infraestructure import ViewConfig as Config
 
@@ -55,6 +56,9 @@ class App(tk.Tk):
     def rejectView(self):
         rejectView = RV.ReturnRejectView(self)
         self.show_view(rejectView)
+    def selectorView(self):
+        selectorView = SO.ReturnSelectorView(self)
+        self.show_view(selectorView)
 
     def initialize_app(self):
         self.LoginView()

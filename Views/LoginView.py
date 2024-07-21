@@ -8,26 +8,12 @@ from PIL import Image, ImageTk
 
 def returnLoginView(parent):
     ventana = tk.Frame(parent, bg='#303A52')  # Color de fondo en formato hexadecimal
-
-    # Configuración de las columnas para centrado
-    ventana.grid_columnconfigure(0, weight=1)
-    ventana.grid_columnconfigure(1, weight=1)
-    ventana.grid_columnconfigure(2, weight=1)
-    ventana.grid_columnconfigure(3, weight=1)
-    ventana.grid_columnconfigure(4, weight=1)
-    ventana.grid_columnconfigure(5, weight=1)
-    ventana.grid_columnconfigure(6, weight=1)
-    ventana.grid_columnconfigure(7, weight=1)
-
+    #Configuracion de las columnas
+    for i in range(8):
+        ventana.grid_columnconfigure(i, weight=1)
     # Configuración de las filas para centrado
-    ventana.grid_rowconfigure(0, weight=1)
-    ventana.grid_rowconfigure(1, weight=1)
-    ventana.grid_rowconfigure(2, weight=1)
-    ventana.grid_rowconfigure(3, weight=1)
-    ventana.grid_rowconfigure(4, weight=1)
-    ventana.grid_rowconfigure(5, weight=1)
-    ventana.grid_rowconfigure(6, weight=1)
-
+    for i in range(7):
+        ventana.grid_rowconfigure(i, weight=1)
     # Label de bienvenida
     lbl = tk.Label(ventana, text="Hola vista de Login", bg='#596174', bd=5, relief="solid", font=("Helvetica", 18))
     lbl.grid(row=1, column=1, columnspan=6, padx=10, pady=20, sticky='n')  # Centrar el label de bienvenida

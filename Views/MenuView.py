@@ -20,13 +20,21 @@ def ReturnMenuView(parent):
     btn_MenuOrderView = tk.Button(ventana, text="Tomar Orden", command=parent.menuOrderView, font=("Helvetica", 12))
     btn_MenuOrderView.grid(row=2, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
 
-    # Botón para tomar orden
+    # Botón para ver resumen del pedido
     btn_InvoiceOrderView = tk.Button(ventana, text="Agregar a la orden", command=parent.invoiceView, font=("Helvetica", 12))
-    btn_InvoiceOrderView.grid(row=2, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
+    btn_InvoiceOrderView.grid(row=3, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
 
-    # Botón para nota de la orden
-    btn_InvoiceView = tk.Button(ventana, text="Nota de la orden", command=parent.invoiceView, font=("Helvetica", 12))
-    btn_InvoiceView.grid(row=6, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
+    # Botón para ver la confirmación del pedido
+    btn_ConfirmView = tk.Button(ventana, text="Confirmación", command=parent.confirmView, font=("Helvetica", 12))
+    btn_ConfirmView.grid(row=4, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
+
+    # Botón para  ver el rechazo del pedido
+    btn_RejectView = tk.Button(ventana, text="Rechazo", command=parent.rejectView, font=("Helvetica", 12))
+    btn_RejectView.grid(row=5, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
+
+    # Botón ver el selector de pedidos
+    btn_SelectorView = tk.Button(ventana, text="pedidos", command=parent.selectorView, font=("Helvetica", 12))
+    btn_SelectorView.grid(row=6, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
 
     ventana.pack(fill='both', expand=True)
     return ventana

@@ -4,23 +4,12 @@ import tkinter as tk
 def returnNewUserView(parent):
     ventana = tk.Frame(parent,bg='#725A7A')
     # Configuración de las columnas para centrado
-    ventana.grid_columnconfigure(0, weight=1)
-    ventana.grid_columnconfigure(1, weight=1)
-    ventana.grid_columnconfigure(2, weight=1)
-    ventana.grid_columnconfigure(3, weight=1)
-    ventana.grid_columnconfigure(4, weight=1)
-    ventana.grid_columnconfigure(5, weight=1)
-    ventana.grid_columnconfigure(6, weight=1)
-    ventana.grid_columnconfigure(7, weight=1)
+    for i in range(8):
+        ventana.grid_columnconfigure(i,weight=1)
 
     # Configuración de las filas para centrado
-    ventana.grid_rowconfigure(0, weight=1)
-    ventana.grid_rowconfigure(1, weight=1)
-    ventana.grid_rowconfigure(2, weight=1)
-    ventana.grid_rowconfigure(3, weight=1)
-    ventana.grid_rowconfigure(4, weight=1)
-    ventana.grid_rowconfigure(5, weight=1)
-    ventana.grid_rowconfigure(6, weight=1)
+    for i in range(7):
+        ventana.grid_rowconfigure(i, weight=1)
 
     # Label de bienvenida
     lbl = tk.Label(ventana, text="Hola usuario nuevo", bg='#C56C86', bd=5, relief="solid", font=("Helvetica", 18))
@@ -39,14 +28,11 @@ def returnNewUserView(parent):
     TextBoxLName = tk.Entry(ventana)
     TextBoxLName.grid(row=2, column=5, padx=10, pady=10, columnspan=3, sticky='w')
 
-
     # Label y SpinBox para edad
     lbl_Age = tk.Label(ventana, text="Edad", bg='#303A52', fg='#FFFFFF', font=("Helvetica", 12))
     lbl_Age.grid(row=3, column=1, padx=10, pady=10, sticky='e')
     SpinBoxAge = tk.Spinbox(ventana, from_=0, to=100)
     SpinBoxAge.grid(row=3, column=2, padx=10, pady=10, columnspan=3, sticky='w')
-
-
 
     # Label y Entry para correo
     lbl_Email = tk.Label(ventana, text="Correo", bg='#303A52', fg='#FFFFFF', font=("Helvetica", 12))
@@ -59,8 +45,6 @@ def returnNewUserView(parent):
     lbl_Password.grid(row=4, column=4, padx=10, pady=10, sticky='e')
     TextBoxPassword = tk.Entry(ventana, show='*')
     TextBoxPassword.grid(row=4, column=5, padx=10, pady=10, columnspan=3, sticky='w')
-
-
 
     # Botones para ingresar y registrarse
     btn_Login = tk.Button(ventana, text="Navegar a la siguiente vista", command=parent.LoginView)
