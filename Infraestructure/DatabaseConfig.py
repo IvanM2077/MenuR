@@ -1,6 +1,8 @@
 def getDataBaseNames():
     nameDB = "DBRest.db"
     TableUser = "USER"
-    TableOrder = "OrderToOrder"
+    TableOrder = "Order"
     TableProducts = "PRODUCTS"
-    return nameDB, TableUser, TableOrder, TableProducts
+    TableRol = "ROL"
+    TableSale = "SALE"
+    return nameDB, TableUser, TableOrder, TableProducts, TableRol, TableSale
