@@ -212,7 +212,7 @@ def getAllOrderByID(UserId):
     con = cur.cursor()
     try:
         cur.execute(f'''
-                    SELECT * FROM 
+                    SELECT * FROM {TableUser} OrderBy UserId
                     ''')
     except Exception as e:
         return False
