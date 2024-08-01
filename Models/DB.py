@@ -238,7 +238,28 @@ def getAllOrderByID(UserId):
     except Exception as e:
         return False
 
-
+def InsertNewOrder(UserId):
+    con = sq.connect(nameDB)
+    cur = con.cursor()
+    try:
+        cur.execute(
+            f''' INSERT INTO {TableOrder} VALUES ({UserId}, {0}, {0})''')
+    except Exception as ex:
+        return "Error"
+def DoPayment(UserId, OrderId):
+    con = sq.connect(nameDB)
+    cur= con.cursor()
+    try:
+        cur.execute(f''' UPDATE {TableOrder} SET Payment ={1} WHERE UserId = {UserId} AND OrderId = {OrderId} ''')
+    except Exception as e:
+        return "Error"
+def ConfirmPayment(UserId, OrderId):
+    con = sq.connect(nameDB)
+    cur= con.cursor()
+    try:
+        cur.execute(f''' UPDATE {TableOrder} SET PaymentConfirm = {1} WHERE UserId = {UserId} AND OrderId = {OrderId} ''')
+    except Exception as e:
+        return "Error"
 
 
 
@@ -290,6 +311,17 @@ def insertNewProduct(item, description, price):
         return False
 #</editor-fold>
 #<editor-fold desc="Sale">
+def getSaleByOrder(UserId, OrderId):
+    con = sq.connect(nameDB)
+    cur = con.cursor()
+    try:
+        "--SELECT * FROM {TableSale} WHERE UserId = {UserId} AND OrderId = {OrderId}"
+        cur.execute(f''' 
+        SELECT * {TableUser}.UserId, {TableOrder}.OrderId, {TableSale}.ProductId FROM {TableOrder} INNER JOIN {TableSale} ON {TableOrder}.UserId = {TableSale}.UserId AND {TableOrder}.OrderId ={TableSale}.OrderId WHERE {TableSale}.UserId = {UserId}  AND {TableSale}.OrderId = {OrderId}
+                    ''')
+        return
+    except Exception as e:
+        return "Error"
 
 #</editor-fold>
 #<editor-fold desc="RolId">
