@@ -5,17 +5,37 @@ nameDB, TableUser, TableOrder, TableProducts, TableRol, TableSale = DBConfig.get
 #Patron de desarrollo singleton
 #<editor-fold desc="CreationDatabase">
 #CREACIÓN DE LA BASE DE DATOS AL INICIALIZAR
+
+class DB:
+    _instance = None  # Unica instancia
+
+    @staticmethod
+    def getInstance():
+        if DB._instance is None:
+            DB._instance = DB()
+        return DB._instance
+
+    def __init__(self):
+        if DB._instance is not None:
+            raise Exception("Error")
+        self.conection = None
+
+    def getConnection(self):
+        if self.conection is None:
+            self.conection = sq.connect(nameDB)
+        return self.conection
+
+    def closeConnection(self):
+        if self.conection is not None:
+            self.conection.close()
+            self.conection = None
+
 def CreateDB():
     #Creamos un objetoo que realizará la conexión db
     con = sq.connect(nameDB)
     #Crea un objeto tipo cursor que podrá acceder a la base de datos
     cur = con.cursor()
-    #Método para ejecutar la cadena de caracteres como si fuese código SQL
-
-    #Crear Tabla
     try:
-        #Verificar si las tablas ya fueron creadas.
-        #Si fueron creadas dar exception ya fueron creadas
         return f"Bases de datos creadas {nameDB}"
 
     except Exception as e:
@@ -124,6 +144,7 @@ def CreateTableSale():
 
 
 #</editor-fold>
+
 #<editor-fold desc="User">
 def createUser(FirstName, LastName, Email, Password):
     con = sq.connect(nameDB)
@@ -212,10 +233,14 @@ def getAllOrderByID(UserId):
     con = cur.cursor()
     try:
         cur.execute(f'''
-                    SELECT * FROM {TableUser} OrderBy UserId
+                    SELECT {TableUser}.UserId, {TableOrder}.OrderId FROM {TableUser} INNER JOIN {TableOrder} ON {TableUser}.UserId = {TableOrder}.UserId WHERE {TableUser}.UserId= {UserId}
                     ''')
     except Exception as e:
         return False
+
+
+
+
 
 #</editor-fold>
 #<editor-fold desc="Products">
@@ -265,7 +290,9 @@ def insertNewProduct(item, description, price):
         return False
 #</editor-fold>
 #<editor-fold desc="Sale">
+
 #</editor-fold>
 #<editor-fold desc="RolId">
+
 #</editor-fold>
 
