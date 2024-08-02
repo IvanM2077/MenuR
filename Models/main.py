@@ -1,7 +1,7 @@
 import math as m
 import Login
 import User as U
-import OrderNtoN as O
+import Orders as O
 import sqlite3 as sq
 import Menu
 import DB

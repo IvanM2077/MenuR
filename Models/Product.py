@@ -4,14 +4,13 @@ dar de alta como administrador
 
 '''
 
-
-
 class Product:
     #constructor de la clase
-    def __init__(self, Id, Item, Price):
-        self.id = Id
-        self.item= Item
-        self.price = Price
+    def __init__(self, ProductId, Item, Description,Price):
+        self.ProductId = ProductId
+        self.Item= Item
+        self.Description = Description
+        self.Price = Price
 
 
 

@@ -1,10 +1,10 @@
 import os
 
 def getDataBaseNames():
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Un nivel más arriba
-    database_dir = os.path.join(project_root, 'database')
-    os.makedirs(database_dir, exist_ok=True)
-    nameDB = os.path.join(database_dir, 'DBRest.db')
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  #Obtiene la direccion del directorio
+    database_dir = os.path.join(project_root, 'database') #crea una carpeta en el directorio llamada database
+    os.makedirs(database_dir, exist_ok=True) #si existe, no la crea, caso contrario si
+    nameDB = os.path.join(database_dir, 'DBRest.db') #monta la base de datos en la carpeta objetivo
     TableUser = "TblUser"
     TableOrder = "TblOrder"
     TableProducts = "TblProduct"

@@ -1,13 +1,14 @@
 import json
 import sqlite3
 class User:
-    def __init__(self, nombre, correo, edad, ):
-        self.Nombre = nombre
-        self.Correo=correo
-        self.Edad=edad
-        pass
-    def ConsultUser(self):
-        pass
+    def __init__(self, UserId, FName, LName, Email, Password, RolId ):
+        self.UserId = UserId
+        self.FName = FName
+        self.LName = LName
+        self.Email = Email
+        self.Password = Password
+        self.RolId = RolId
+
 #clase empleado que podrá realizar las peticiones y tomar las ordenes
 '''
 La diferencia entre estos residirá en los métodos para poder accesar 
@@ -22,8 +23,6 @@ class Employee(User):
         self.password = password
         self.Edad=edad
         super().__init__()
-
-        pass
 class Administrator(User):
     def __init__(self,nombre, correo,password, edad):
         self.id= None

@@ -253,7 +253,8 @@ def updateUser(id,Fname, LName):
     cur = con.cursor()
     try:
         cur.execute(f'''UPDATE {TableUser} SET FirstName = {Fname}, LastName = {LName} WHERE UserId = {id} ''')
-
+        con.commit()
+        con.close()
     except Exception as e:
         return False
 def deleteUser(id):
@@ -271,9 +272,10 @@ def getUserById(id):
     cur = con.cursor()
     try:
         cur.execute(f'''SELECT * FROM {TableUser} WHERE UserId = {id}''')
+        obj = cur.fetchone()
         con.commit()
         con.close()
-        return True
+        return obj
     except Exception as e:
         return False
 
@@ -282,9 +284,10 @@ def getAllUser():
     cur = con.cursor()
     try:
         cur.execute(f'''SELECT * FROM {TableUser}''')
+        objs = cur.fetchall()
         con.commit()
         con.close()
-        return True
+        return objs
     except Exception as e:
         return False
 #</editor-fold>
