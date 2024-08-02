@@ -51,6 +51,5 @@ def returnNewUserView(parent):
     btn_Login.grid(row=6, column=1, columnspan=6, padx=10, pady=20, sticky='n')  # Ajustar el padding
 
 
-
     ventana.pack(fill='both', expand=True)
     return ventana

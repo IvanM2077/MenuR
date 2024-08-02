@@ -1,14 +1,14 @@
 import tkinter as tk
-import MenuView as MV
-import MenuOrderView as MOV
-import InvoiceView as IV
-import ConfirmView as CV
-import RejectView as RV
-import LoginView as LV
-import SelectorOrder as SO
-import NewUserView as NUW
+import Views.MenuView as MV
+import Views.MenuOrderView as MOV
+import Views.InvoiceView as IV
+import Views.ConfirmView as CV
+import Views.RejectView as RV
+import Views.LoginView as LV
+import Views.SelectorOrder as SO
+import Views.NewUserView as NUW
 from Infraestructure import ViewConfig as Config
-
+from Models import DB as Database
 # Dimensiones de la ventana
 
 WIDTH, HEIGHT = Config.GetDimmentions()
@@ -36,6 +36,7 @@ class App(tk.Tk):
     def LoginView(self):
         loginView = LV.returnLoginView(self)
         self.show_view(loginView)
+        DBMenu = Database.DB.getInstance()
 
     def menuView(self):
         menuView = MV.ReturnMenuView(self)
@@ -64,7 +65,5 @@ class App(tk.Tk):
         self.LoginView()
         self.mainloop()
 
-# Crea la instancia de la aplicación
-myapp = App()
-myapp.initialize_app()
+
 

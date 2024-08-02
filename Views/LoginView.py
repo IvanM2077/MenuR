@@ -1,10 +1,5 @@
 import tkinter as tk
-import MenuView as MV
-import MenuOrderView as MOV
-import InvoiceView as IV
-import ConfirmView as CV
-import RejectView as RV
-from PIL import Image, ImageTk
+
 
 def returnLoginView(parent):
     ventana = tk.Frame(parent, bg='#303A52')  # Color de fondo en formato hexadecimal
