@@ -1,33 +1,29 @@
-import tkinter as tk
+import re
 from tkinter import messagebox
 
 #<editor-fold desc="HelpersVerify">
-def verifyIsNumeric(entryData):
-    data = entryData.get()
+def verifyIsNumeric(data):
     if data.isnumeric():
         return True
     else:
         messagebox.showerror("Error", "Los datos deben ser numericos")
         return False
 
-def verifyIsAlpha(entryData):
-    data = entryData.get()
+def verifyIsAlpha(data):
     if data.isalpha():
         return True
     else:
         messagebox.showerror("Error", "Los datos deben ser caracteres")
         return False
 
-def verifyIsAlphaNumeric(entryData):
-    data = entryData.get()
+def verifyIsAlphaNumeric(data):
     if data.isalnum():
         return True
     else:
         messagebox.showerror("Error", "Los datos deben ser alfanumericos")
         return False
 
-def verifyIsEmail(entryData):
-    data = entryData.get()
+def verifyIsEmail(data):
     ListData = data.split("@")
     valid_domains = ["gmail.com", "outlook.com", "icloud.com"]
     if len(ListData) == 2 and ListData[1] in valid_domains:
@@ -36,6 +32,12 @@ def verifyIsEmail(entryData):
         messagebox.showerror("Error", "No es un correo electrónico válido")
         return False
 
+def verifyEmailLogin(email):
+    regex = r'^\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    if re.match(regex, email):
+        return True
+    else:
+        return False
 #</editor-fold>
 
 #<editor-fold desc="Encriptador">

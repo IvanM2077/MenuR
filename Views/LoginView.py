@@ -1,9 +1,13 @@
 import tkinter as tk
+from tkinter import messagebox
+import Models.User as MU
+import Models.DB
+import Models.Session
+import Infraestructure.Helper as IH
 
-
-def returnLoginView(parent):
+def returnLoginView(parent, session):
     ventana = tk.Frame(parent, bg='#303A52')  # Color de fondo en formato hexadecimal
-    #Configuracion de las columnas
+    # Configuración de las columnas
     for i in range(8):
         ventana.grid_columnconfigure(i, weight=1)
     # Configuración de las filas para centrado
@@ -26,17 +30,39 @@ def returnLoginView(parent):
     TextBoxPassword.grid(row=3, column=4, padx=10, pady=10, columnspan=3, sticky='w')
 
     # Botones para ingresar y registrarse
-    btn_Login = tk.Button(ventana, text="Ingresar", command=parent.menuView)
+    btn_Login = tk.Button(ventana, text="Ingresar",
+                          command=lambda: verifyEmailAndPass(parent, TextBoxEmail, TextBoxPassword))
     btn_Login.grid(row=5, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
 
-    btn_RegisterUser = tk.Button(ventana, text="Regístrese como usuario nuevo", command=parent.RegisteNewUserView)
+    btn_RegisterUser = tk.Button(ventana, text="Regístrese como usuario nuevo", command=lambda: gotoNewUser(parent))
     btn_RegisterUser.grid(row=6, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
 
     ventana.pack(fill='both', expand=True)
     return ventana
 
+def verifyEmailAndPass(parent, TextBoxEmail, TextBoxPassword):
+    email = TextBoxEmail.get()
+    password = TextBoxPassword.get()
+    EmailProof = IH.verifyEmailLogin(email)
+    PasswordProof = IH.verifyIsAlphaNumeric(password)
+    PasswordSubmit = IH.encrypt(password)
+
+    if EmailProof and PasswordProof:
+        session = Models.Session.Session.getInstance()
+        User = session.DataBase.consultPasswordAndEmail(email, PasswordSubmit)
+        if User is not None:
+            parent.PermissionLogin = True
+            messagebox.showinfo("Éxito", "Login exitoso")
+            session.user = User
+            parent.menuView()
+        else:
+            messagebox.showwarning("Advertencia", "No existe usuario en la base de datos")
+    else:
+        messagebox.showwarning("Advertencia", "Datos inválidos")
 
 
+def gotoNewUser(parent):
+    parent.RegisteNewUserView()
 
 
 '''

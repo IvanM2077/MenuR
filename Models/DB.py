@@ -1,7 +1,10 @@
 #Patron de desarrollo singleton
 #<editor-fold desc="CreationDatabase">
-#CREACIÓN DE LA BASE DE DATOS AL INICIALIZAR
+#CREACIÓN DE LA BASE DE DATOS AL INICIALIZAR las tablas y consulta toda en una clase
 import sqlite3 as sq
+
+import Models.User
+import Models.Orders
 from Infraestructure.DatabaseConfig import getDataBaseNames  # Asegúrate de que la importación sea correcta
 
 # Obtén los nombres de la base de datos y tablas
@@ -31,7 +34,6 @@ class DB:
     def Initialiate(self):
         self.getConnection()
         self.createTables()
-        self.closeConnection()
 
     def getConnection(self):
         if self.connection is None:
@@ -52,7 +54,7 @@ class DB:
 
     def CreateTableRolId(self):
         try:
-            cur = self.connection.cursor()
+            cur = self.getConnection().cursor()
             cur.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.TableRol} (
                     RolId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,7 +68,7 @@ class DB:
 
     def CreateTableUser(self):
         try:
-            cur = self.connection.cursor()
+            cur = self.getConnection().cursor()
             cur.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.TableUser} (
                     UserId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -85,7 +87,7 @@ class DB:
 
     def CreateTableProduct(self):
         try:
-            cur = self.connection.cursor()
+            cur = self.getConnection().cursor()
             cur.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.TableProducts} (
                     ProductId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,7 +103,7 @@ class DB:
 
     def CreateTableOrder(self):
         try:
-            cur = self.connection.cursor()
+            cur = self.getConnection().cursor()
             cur.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.TableOrder} (
                     OrderId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -118,7 +120,7 @@ class DB:
 
     def CreateTableSale(self):
         try:
-            cur = self.connection.cursor()
+            cur = self.getConnection().cursor()
             cur.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.TableSale} (
                     UserId INTEGER NOT NULL,
@@ -133,6 +135,57 @@ class DB:
         except sq.Error as e:
             print(f"Error al crear la tabla {self.TableSale}: {e}")
             self.connection.rollback()
+
+    def consultPasswordAndEmail(self, Email, Password):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute(f'''SELECT * FROM {self.TableUser} WHERE {self.TableUser}.Email = ? AND {self.TableUser}.Password = ?''',(Email, Password))
+            user_data = cur.fetchone()
+            if user_data:
+                 return Models.User.User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[5])
+            else:
+                return None
+        except sq.Error as e:
+            print("Error al consultar el usuario y/o contraseña: ", e)
+            return None
+
+    def InsertNewUser(self, User):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute(f'''INSERT INTO {self.TableUser} (FirstName, LastName, Email, Password, RolId) VALUES (?, ?, ?, ?, ?)''',
+                        (User.FirstName, User.LastName, User.Email, User.Password, User.RolId))
+            self.connection.commit()
+            return True
+        except sq.Error as e:
+            print(f"Error no se pudo agregar el usuario: {e}")
+            self.connection.rollback()
+            return False
+
+    def getAllOrderById(self, UserId):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute(f'''
+                SELECT {self.TableUser}.UserId, {self.TableOrder}.OrderId, {self.TableOrder}.Payment, {self.TableOrder}.PaymentConfirm
+                FROM {self.TableUser}
+                INNER JOIN {self.TableOrder} ON {self.TableUser}.UserId = {self.TableOrder}.UserId
+                WHERE {self.TableUser}.UserId = ?
+            ''', (UserId,))
+            ListOrders = cur.fetchall()
+            if ListOrders != None:
+                List = []
+                for order in ListOrders:
+                    aux = Models.Orders.Orders(order[1], order[0], order[2], order[3])
+                    List.append(aux)
+                self.connection.commit()
+                return List
+            else:
+                print("No orders found for the given UserId.")
+                return []
+
+        except sq.Error as e:
+            print(f"Error al obtener el listado de órdenes: {e}")
+            self.connection.rollback()
+            return []
 
 #</editor-fold>
 #<editor-fold desc="CreationTables">

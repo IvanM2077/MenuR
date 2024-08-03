@@ -1,10 +1,10 @@
 import json
 import sqlite3
 class User:
-    def __init__(self, UserId, FName, LName, Email, Password, RolId ):
+    def __init__(self, UserId, FirstName, LastName, Email, Password, RolId):
         self.UserId = UserId
-        self.FName = FName
-        self.LName = LName
+        self.FirstName = FirstName
+        self.LastName = LastName
         self.Email = Email
         self.Password = Password
         self.RolId = RolId

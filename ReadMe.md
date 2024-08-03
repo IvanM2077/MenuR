@@ -20,5 +20,8 @@ Ejuctar script de la terminal ==> pip install -r requirements.txt
 - scipy
 ## Como funciona
 Sistema de registro de usuarios para poder realizar seguimiento a las ordenes de comida 
-incluyendo la funcionalidad de un carrito de compras
+incluyendo la funcionalidad de un carrito de compras, del mismo modo se crea la base de datos
+de forma automatica así como las relaciones que tiene entre ellos las tablas en una 
+carpeta dentro del proyecto
+
 

@@ -2,9 +2,10 @@ import tkinter as tk
 from tkinter import messagebox
 import Models.User as MU
 import Models.DB
+import Models.Session
 import Infraestructure.Helper as IH
 
-def returnNewUserView(parent):
+def returnNewUserView(parent, session):
     ventana = tk.Frame(parent, bg='#725A7A')
     # Configuración de las columnas para centrado
     for i in range(8):
@@ -56,16 +57,23 @@ def returnNewUserView(parent):
     return ventana
 
 def verificar_entradas(parent, TextBoxFName, TextBoxLName, SpinBoxAge, TextBoxEmail, TextBoxPassword):
-    FN = IH.verifyIsAlpha(TextBoxFName)
-    LN = IH.verifyIsAlpha(TextBoxLName)
-    A = IH.verifyIsNumeric(SpinBoxAge)
-    E = IH.verifyIsEmail(TextBoxEmail)
-    P = IH.verifyIsAlphaNumeric(TextBoxPassword)
+    FN = IH.verifyIsAlpha(TextBoxFName.get())
+    LN = IH.verifyIsAlpha(TextBoxLName.get())
+    A = IH.verifyIsNumeric(SpinBoxAge.get())
+    E = IH.verifyIsEmail(TextBoxEmail.get())
+    P = IH.verifyIsAlphaNumeric(TextBoxPassword.get())
     TextBoxPasswordSubmit = IH.encrypt(TextBoxPassword.get())  # Encriptar la contraseña
 
     if FN and LN and A and E and P:
         new_user = MU.User(0, TextBoxFName.get(), TextBoxLName.get(), TextBoxEmail.get(), TextBoxPasswordSubmit, 0)
-        # Aquí podrías guardar el nuevo usuario en la base de datos, por ejemplo:
-        # db_instance = Models.DB.getInstance()
-        # db_instance.save_user(new_user)
-        parent.LoginView()
+        session = Models.Session.Session.getInstance()
+        SearchUser = session.DataBase.consultPasswordAndEmail(TextBoxEmail.get(), TextBoxPasswordSubmit)
+        if SearchUser is not None:
+            messagebox.showwarning("Advertencia", "No se puede usar el correo, ya existe en la base de datos")
+        else:
+            if session.DataBase.InsertNewUser(new_user):
+                messagebox.showinfo("Éxito", "Usuario agregado con éxito")
+                parent.LoginView()
+            else:
+                messagebox.showerror("Error", "No se pudo agregar el usuario")
+

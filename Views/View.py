@@ -20,7 +20,7 @@ class App(tk.Tk):
         self.geometry(f"{WIDTH}x{HEIGHT}")
         self.title("Aplicación gestión de restaurantes")
         self.current_view = None  # Para mantener un seguimiento de la vista actual
-        self.session = Session()
+        self.session = None
         self.PermissionLogin = False
 
     def show_view(self, new_view):
@@ -34,22 +34,23 @@ class App(tk.Tk):
         self.current_view.pack()
 
     def RegisteNewUserView(self):
-        registerView = NUW.returnNewUserView(self)
+        registerView = NUW.returnNewUserView(self,self.session)
         self.show_view(registerView)
 
     def LoginView(self):
-        loginView = LV.returnLoginView(self)
+        self.session = Session.getInstance()
+        loginView = LV.returnLoginView(self, self.session)
         self.show_view(loginView)
-        self.session = Session()
 
     def menuView(self):
         if self.PermissionLogin:
-            menuView = MV.ReturnMenuView(self)
+            #print(self.session.user.Email)
+            menuView = MV.ReturnMenuView(self, self.session)
             self.show_view(menuView)
 
     def menuOrderView(self):
         if self.PermissionLogin:
-            menuOrderView = MOV.returnMenuOrderView(self)
+            menuOrderView = MOV.returnMenuOrderView(self, self.session)
             self.show_view(menuOrderView)
 
     def invoiceView(self):

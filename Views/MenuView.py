@@ -1,7 +1,7 @@
 import tkinter as tk
 
 
-def ReturnMenuView(parent):
+def ReturnMenuView(parent, session):
     ventana = tk.Frame(parent, bg='#41436A')
 
     # Configuración de las columnas para centrado
@@ -11,9 +11,9 @@ def ReturnMenuView(parent):
     # Configuración de las filas para centrado
     for i in range(7):
         ventana.grid_rowconfigure(i, weight=1)
-
+    Name=session.user.FirstName
     # Label de bienvenida
-    lbl = tk.Label(ventana, text="Menú Opciones", bg='#C56C86', bd=5, relief="solid", font=("Helvetica", 18))
+    lbl = tk.Label(ventana, text=f"Menú Opciones Bienvenido {Name}", bg='#C56C86', bd=5, relief="solid", font=("Helvetica", 18))
     lbl.grid(row=1, column=3, columnspan=2, padx=10, pady=20, sticky='n')  # Centrar el label de bienvenida
 
     # Botón para tomar orden
@@ -36,6 +36,7 @@ def ReturnMenuView(parent):
     btn_SelectorView = tk.Button(ventana, text="pedidos", command=parent.selectorView, font=("Helvetica", 12))
     btn_SelectorView.grid(row=6, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
 
+    print(session.user.Email)
     ventana.pack(fill='both', expand=True)
     return ventana
 
