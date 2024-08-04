@@ -11,7 +11,7 @@ Tendrá indicadores que permitirá el uso de mesas y control sobre las notas de 
 que realizan los empleados  (meseros) al momento de dar el servicio. 
 ## Instalar las  siguientes librerías para su ejecución 
 Ejuctar script de la terminal ==> pip install -r requirements.txt
-- easytkinter==1.1.0
+- customtkinter
 - PIL
 - sqlite3
 - numpy

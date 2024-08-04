@@ -1,4 +1,4 @@
-easytkinter==1.1.0
+customtkinter==5.2.2
 PILLOW
 numpy
 pandas
