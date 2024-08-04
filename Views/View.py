@@ -1,4 +1,4 @@
-import tkinter as tk
+import customtkinter as ctk
 import Views.MenuView as MV
 import Views.MenuOrderView as MOV
 import Views.InvoiceView as IV
@@ -14,7 +14,7 @@ from Models.Session import Session
 # Dimensiones de la ventana
 WIDTH, HEIGHT = Config.GetDimmentions()
 
-class App(tk.Tk):
+class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.geometry(f"{WIDTH}x{HEIGHT}")
@@ -34,7 +34,7 @@ class App(tk.Tk):
         self.current_view.pack()
 
     def RegisteNewUserView(self):
-        registerView = NUW.returnNewUserView(self,self.session)
+        registerView = NUW.returnNewUserView(self, self.session)
         self.show_view(registerView)
 
     def LoginView(self):
@@ -44,7 +44,6 @@ class App(tk.Tk):
 
     def menuView(self):
         if self.PermissionLogin:
-            #print(self.session.user.Email)
             menuView = MV.ReturnMenuView(self, self.session)
             self.show_view(menuView)
 
@@ -76,4 +75,3 @@ class App(tk.Tk):
     def initialize_app(self):
         self.LoginView()
         self.mainloop()
-

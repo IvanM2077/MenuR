@@ -139,10 +139,30 @@ class DB:
     def consultPasswordAndEmail(self, Email, Password):
         try:
             cur = self.getConnection().cursor()
-            cur.execute(f'''SELECT * FROM {self.TableUser} WHERE {self.TableUser}.Email = ? AND {self.TableUser}.Password = ?''',(Email, Password))
+            cur.execute(f'''SELECT * FROM {self.TableUser} WHERE {self.TableUser}.Email = ? AND {self.TableUser}.Password = ?''',(Email,Password))
             user_data = cur.fetchone()
             if user_data:
-                 return Models.User.User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[5])
+                if user_data[3] == Email and user_data[4] == Password:
+                    return Models.User.User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[5])
+                if user_data[3] == Email and user_data[3] != Password:
+                    return False
+            else:
+                return None
+        except sq.Error as e:
+            print("Error al consultar el usuario y/o contraseña: ", e)
+            return None
+
+    def consultEmail(self, Email, Password):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute(f'''SELECT * FROM {self.TableUser} WHERE {self.TableUser}.Email = ?''', (Email,))
+            user_data = cur.fetchone()
+            if user_data:
+                if user_data[3] == Email and user_data[4] == Password:
+                    return Models.User.User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4],
+                                            user_data[5])
+                if user_data[3] == Email and user_data[3] != Password:
+                    return False
             else:
                 return None
         except sq.Error as e:
