@@ -24,11 +24,11 @@ class App(ctk.CTk):
         self.PermissionLogin = False
 
     def show_view(self, new_view):
-        # Si hay una vista actual, destrúyela
+        # Si hay una vista actual, se deestruye
         if self.current_view:
             self.current_view.destroy()
 
-        # Mostrar la nueva vista
+        # se muestra la nueva, y no permite que se haga resize
         self.current_view = new_view
         self.resizable(False, False)
         self.current_view.pack()

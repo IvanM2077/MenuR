@@ -8,11 +8,11 @@ import Infraestructure.Helper as IH
 import Infraestructure.ViewConfig as IV
 import os
 
-Bg, Bg2, BtnC1, BtnC2, TextColor = IV.GetPalleteColours()
-ConfTitles, ConfTexts = IV.getTypeLetters()
+Bg1, Bg2, Btn1, Btn2, Btn3, TextColor = IV.GetPalleteColours()
+FontTitle, FontText = IV.getTypeLetters()
 def returnLoginView(parent, session):
     #Padre
-    ventana = ctk.CTkFrame(parent, fg_color=Bg)  # Color de fondo en formato hexadecimal
+    ventana = ctk.CTkFrame(parent, fg_color=Bg1)  # Color de fondo en formato hexadecimal
     #LadoDerecho
     # <editor-fold desc="Login lado derecho">
     # Configuración de las columnas
@@ -27,21 +27,23 @@ def returnLoginView(parent, session):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     #Uno mas arriba
     root_Dir = os.path.dirname(current_dir)
-    image_path = os.path.join(root_Dir, "Images", "Login.png")
+    dir_iconLogin = os.path.join(root_Dir, "Images", "Login.png")
+    dir_iconEmail = os.path.join(root_Dir,"Images", "Email.png")
+    dir_iconPassword = os.path.join(root_Dir, "Images","Password.png")
 
     # Fondo Lado derecho
-    if os.path.exists(image_path):
-        password_icon = ctk.CTkImage(Image.open(image_path), size=(800, 700))
-        lbl_PasswordIcon = ctk.CTkLabel(ventana, image=password_icon, text="")
-        lbl_PasswordIcon.grid(row=0, column=0, rowspan=7, padx=10, pady=10, sticky='nsew')
+    if os.path.exists(dir_iconLogin):
+        login_icon = ctk.CTkImage(Image.open(dir_iconLogin), size=(800, 700))
+        lbl_Login = ctk.CTkLabel(ventana, image=login_icon, text="")
+        lbl_Login.grid(row=0, column=0, rowspan=7, padx=10, pady=10, sticky='nsew')
     else:
-        messagebox.showwarning("Advertencia", f"No se encontró el archivo de imagen en {image_path}")
+        messagebox.showwarning("Advertencia", f"No se encontró el archivo de imagen en {dir_iconLogin}")
 
     # </editor-fold>
 
     # <editor-fold desc="Login lado izquierdo">
     # Frame para los widgets
-    widget_frame = ctk.CTkFrame(ventana, fg_color=Bg)
+    widget_frame = ctk.CTkFrame(ventana, fg_color=Bg1)
     widget_frame.grid(row=0, column=1, rowspan=7, padx=10, pady=10, sticky='nsew')
 
     # Configuración de las columnas y filas en el frame de widgets
@@ -50,27 +52,46 @@ def returnLoginView(parent, session):
     for i in range(7):
         widget_frame.grid_rowconfigure(i, weight=1)
 
+    # Fondo Lado derecho
+    if os.path.exists(dir_iconLogin):
+        login_icon = ctk.CTkImage(Image.open(dir_iconLogin), size=(800, 700))
+        lbl_Login = ctk.CTkLabel(ventana, image=login_icon, text="")
+        lbl_Login.grid(row=0, column=0, rowspan=7, padx=10, pady=10, sticky='nsew')
+        email_icon = ctk.CTkImage(Image.open(dir_iconEmail), size=(30,30))
+        password_icon = ctk.CTkImage(Image.open(dir_iconPassword), size=(30,30))
+
+    else:
+        messagebox.showwarning("Advertencia", f"No se encontró el archivo de imagen en {dir_iconLogin}")
+
     # Label de bienvenida
-    lbl = ctk.CTkLabel(widget_frame, text="Sign in With", bg_color=Bg2, text_color=TextColor, font=(ConfTitles))
+    lbl = ctk.CTkLabel(widget_frame, text="Sign in With", bg_color=Bg2, text_color=TextColor, font=(FontTitle))
     lbl.grid(row=1, column=1, columnspan=6, padx=10, pady=20, sticky='n')  # Centrar el label de bienvenida
 
     # Label y Entry para correo
-    lbl_Email = ctk.CTkLabel(widget_frame, text="Correo", bg_color=Bg2, text_color=TextColor, font=(ConfTexts))
+    lbl_EmailIcon = ctk.CTkLabel(widget_frame, text="", bg_color=Bg2, text_color=TextColor, font=(FontText), image=email_icon)
+    lbl_EmailIcon.grid(row=2, column=2, padx=10, pady=10, sticky='e')
+
+    lbl_Email = ctk.CTkLabel(widget_frame, text="Correo", bg_color=Bg2, text_color=TextColor, font=(FontText), )
     lbl_Email.grid(row=2, column=3, padx=10, pady=10, sticky='e')
+
     TextBoxEmail = ctk.CTkEntry(widget_frame)
     TextBoxEmail.grid(row=2, column=4, padx=10, pady=10, columnspan=3, sticky='w')
 
     # Label y Entry para contraseña
-    lbl_Password = ctk.CTkLabel(widget_frame, text="Password", bg_color=Bg2, text_color=TextColor, font=(ConfTexts))
+    lbl_PasswordIcon = ctk.CTkLabel(widget_frame, text="", bg_color=Bg2, text_color=TextColor, font=(FontText), image=password_icon)
+    lbl_PasswordIcon.grid(row=3, column=2, padx=10, pady=10, sticky='e')
+
+    lbl_Password = ctk.CTkLabel(widget_frame, text="Password", bg_color=Bg2, text_color=TextColor, font=(FontText))
     lbl_Password.grid(row=3, column=3, padx=10, pady=10, sticky='e')
+
     TextBoxPassword = ctk.CTkEntry(widget_frame, show='*')
     TextBoxPassword.grid(row=3, column=4, padx=10, pady=10, columnspan=3, sticky='w')
 
     # Botones para ingresar y registrarse
-    btn_Login = ctk.CTkButton(widget_frame, text="Ingresar", font=ConfTexts, fg_color=BtnC1,command=lambda: verifyEmailAndPass(parent, TextBoxEmail, TextBoxPassword))
+    btn_Login = ctk.CTkButton(widget_frame, text="Login", font=FontText, fg_color=Btn1, command=lambda: verifyEmailAndPass(parent, TextBoxEmail, TextBoxPassword))
     btn_Login.grid(row=5, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
 
-    btn_RegisterUser = ctk.CTkButton(widget_frame, text="Regístrese como usuario nuevo",font=ConfTexts,fg_color=BtnC1, command=lambda: gotoNewUser(parent))
+    btn_RegisterUser = ctk.CTkButton(widget_frame, text="Sign Up", font=FontText, fg_color=Btn1, command=lambda: gotoNewUser(parent))
     btn_RegisterUser.grid(row=6, column=1, columnspan=6, padx=10, pady=20, sticky='ew')  # Ajustar el padding
 
     # </editor-fold>

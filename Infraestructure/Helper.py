@@ -66,3 +66,11 @@ def encrypt(cadena):
 #</editor-fold>
 
 
+
+
+#<editor-fold desc="Enum">
+def enumRol():
+    employeePermission ="Employee"
+    adminPermission = "Admin"
+    return employeePermission, adminPermission
+#</editor-fold>

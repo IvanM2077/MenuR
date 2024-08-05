@@ -5,6 +5,7 @@ import sqlite3 as sq
 
 import Models.User
 import Models.Orders
+import Models.Rol
 from Infraestructure.DatabaseConfig import getDataBaseNames  # Asegúrate de que la importación sea correcta
 
 # Obtén los nombres de la base de datos y tablas
@@ -135,6 +136,22 @@ class DB:
         except sq.Error as e:
             print(f"Error al crear la tabla {self.TableSale}: {e}")
             self.connection.rollback()
+    def getAllRol(self):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute(f"SELECT * FROM {self.TableRol}")
+            RolsDb = cur.fetchall()
+            RolsFound = []
+            for i, v in enumerate(RolsDb):
+                aux = Models.Rol.Rol(v[0], v[1])
+                RolsFound.append(aux)
+            if(RolsFound is not None):
+                return RolsFound
+            else:
+                return None
+                print("No existe valores en la db")
+        except sq.Error as e:
+            print("Error al consultar los roles: ", e)
 
     def consultPasswordAndEmail(self, Email, Password):
         try:

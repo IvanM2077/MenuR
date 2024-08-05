@@ -6,8 +6,9 @@ import Models.Session
 import Infraestructure.Helper as IH
 import Infraestructure.ViewConfig as IV
 
-Bg1, Bg2, Btn1, Btn2, TextColor = IV.GetPalleteColours()
-FontsTitles, FontsText = IV.getTypeLetters()
+Bg1, Bg2, Btn1, Btn2, Btn3, TextColor = IV.GetPalleteColours()
+#Bg2 = Btn1
+FontTitle, FontText = IV.getTypeLetters()
 def returnNewUserView(parent, session):
     ventana = ctk.CTkFrame(parent, fg_color=Bg1)
 
@@ -20,44 +21,44 @@ def returnNewUserView(parent, session):
         ventana.grid_rowconfigure(i, weight=1)
 
     # Label de bienvenida
-    lbl = ctk.CTkLabel(ventana, text="Hola usuario nuevo", bg_color='#C56C86', text_color='#FFFFFF',font=(FontsTitles))
+    lbl = ctk.CTkLabel(ventana, text="Create An Account", bg_color=Bg2, text_color=TextColor, font=(FontTitle))
     lbl.grid(row=1, column=3, columnspan=2, padx=10, pady=20, sticky='n')  # Centrar el label de bienvenida
 
     # Label y Entry para nombre
-    lbl_FirstName = ctk.CTkLabel(ventana, text="Nombre", bg_color='#303A52', text_color='#FFFFFF',font=(FontsText))
+    lbl_FirstName = ctk.CTkLabel(ventana, text="Nombre", bg_color=Bg2, text_color=TextColor, font=(FontText))
     lbl_FirstName.grid(row=2, column=1, padx=10, pady=10, sticky='e')
     TextBoxFName = ctk.CTkEntry(ventana)
     TextBoxFName.grid(row=2, column=2, padx=10, pady=10, columnspan=3, sticky='w')
 
     # Label y Entry para apellido
-    lbl_LastName = ctk.CTkLabel(ventana, text="Apellido", bg_color='#303A52', text_color='#FFFFFF',font=(FontsText))
+    lbl_LastName = ctk.CTkLabel(ventana, text="Apellido", bg_color=Bg2, text_color=TextColor, font=(FontText))
     lbl_LastName.grid(row=2, column=4, padx=10, pady=10, sticky='e')
     TextBoxLName = ctk.CTkEntry(ventana)
     TextBoxLName.grid(row=2, column=5, padx=10, pady=10, columnspan=3, sticky='w')
 
     # Label y Entry para edad
-    lbl_Age = ctk.CTkLabel(ventana, text="Edad", bg_color='#303A52', text_color='#FFFFFF', font=(FontsText))
+    lbl_Age = ctk.CTkLabel(ventana, text="Edad", bg_color=Bg2, text_color=TextColor, font=(FontText))
     lbl_Age.grid(row=3, column=1, padx=10, pady=10, sticky='e')
     TextBoxAge = ctk.CTkEntry(ventana)
     TextBoxAge.grid(row=3, column=2, padx=10, pady=10, columnspan=3, sticky='w')
 
     # Label y Entry para correo
-    lbl_Email = ctk.CTkLabel(ventana, text="Correo", bg_color='#303A52', text_color='#FFFFFF', font=(FontsText))
+    lbl_Email = ctk.CTkLabel(ventana, text="Email", bg_color=Bg2, text_color=TextColor, font=(FontText))
     lbl_Email.grid(row=4, column=1, padx=10, pady=10, sticky='e')
     TextBoxEmail = ctk.CTkEntry(ventana)
     TextBoxEmail.grid(row=4, column=2, padx=10, pady=10, columnspan=3, sticky='w')
 
     # Label y Entry para contraseña
-    lbl_Password = ctk.CTkLabel(ventana, text="Password", bg_color='#303A52', text_color='#FFFFFF',font=(FontsText))
+    lbl_Password = ctk.CTkLabel(ventana, text="Password", bg_color=Bg2, text_color=TextColor, font=(FontText))
     lbl_Password.grid(row=4, column=4, padx=10, pady=10, sticky='e')
     TextBoxPassword = ctk.CTkEntry(ventana, show='*')
     TextBoxPassword.grid(row=4, column=5, padx=10, pady=10, columnspan=3, sticky='w')
 
     # Botones para ingresar y registrarse
-    btn_Login = ctk.CTkButton(ventana, text="Enviar información", font=FontsText,fg_color=Btn1,command=lambda: verificar_entradas(parent, TextBoxFName, TextBoxLName, TextBoxAge,TextBoxEmail, TextBoxPassword))
+    btn_Login = ctk.CTkButton(ventana, text="Register", font=FontText, fg_color=Btn1, command=lambda: verificar_entradas(parent, TextBoxFName, TextBoxLName, TextBoxAge, TextBoxEmail, TextBoxPassword))
     btn_Login.grid(row=6, column=1, columnspan=1, padx=10, pady=20, sticky='n')
 
-    btn_back = ctk.CTkButton(ventana, text="Regresar a la vista de login",font=FontsText,fg_color=Btn1,command=lambda: BackToLogin(parent))
+    btn_back = ctk.CTkButton(ventana, text="Back to login", font=FontText, fg_color=Btn1, command=lambda: BackToLogin(parent))
     btn_back.grid(row=6, column=6, columnspan=1, padx=10, pady=20, sticky='n')
 
 
