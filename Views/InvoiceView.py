@@ -1,6 +1,6 @@
 import customtkinter as ctk
 
-def ReturnInvoiceView(parent):
+def ReturnInvoiceView(parent, session):
     ventana = ctk.CTkFrame(parent, fg_color='#303A52')  # Color de fondo en formato hexadecimal
     # Configuración de las columnas
     for i in range(8):

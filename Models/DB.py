@@ -6,6 +6,8 @@ import sqlite3 as sq
 import Models.User
 import Models.Orders
 import Models.Rol
+import Models.Product
+import Models.Sales
 from Infraestructure.DatabaseConfig import getDataBaseNames  # Asegúrate de que la importación sea correcta
 
 # Obtén los nombres de la base de datos y tablas
@@ -152,7 +154,22 @@ class DB:
                 print("No existe valores en la db")
         except sq.Error as e:
             print("Error al consultar los roles: ", e)
-
+    def getAllProducts(self):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute(f"SELECT * FROM {self.TableProducts}")
+            ProductsDb = cur.fetchall()
+            ProductsFound = []
+            for i, v in enumerate(ProductsDb):
+                aux = Models.Product.Product(v[0], v[1], v[2], v[3])
+                ProductsFound.append(aux)
+            if(ProductsFound is not None):
+                return ProductsFound
+            else:
+                return None
+                print("No existe valores en la db")
+        except sq.Error as e:
+            print("Error al consultar los productos: ", e)
     def consultPasswordAndEmail(self, Email, Password):
         try:
             cur = self.getConnection().cursor()

@@ -1,6 +1,6 @@
 import customtkinter as ctk
 
-def ReturnConfirmView(parent):
+def ReturnConfirmView(parent, session):
     ventana = ctk.CTkFrame(parent, fg_color='#426D5E')  # Color de fondo en formato hexadecimal
     # Configuración de las columnas
     for i in range(8):

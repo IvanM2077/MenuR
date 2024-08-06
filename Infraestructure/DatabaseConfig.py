@@ -9,7 +9,7 @@ def getDataBaseNames():
     TableOrder = "TblOrder"
     TableProducts = "TblProduct"
     TableRol = "TblRol"
-    TableSale = "TblSal"
+    TableSale = "TblSale"
     return nameDB, TableUser, TableOrder, TableProducts, TableRol, TableSale
 
 

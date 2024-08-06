@@ -14,6 +14,7 @@ from Models.Session import Session
 # Dimensiones de la ventana
 WIDTH, HEIGHT = Config.GetDimmentions()
 
+
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -22,16 +23,22 @@ class App(ctk.CTk):
         self.current_view = None  # Para mantener un seguimiento de la vista actual
         self.session = None
         self.PermissionLogin = False
+        self.currenOpt = None
 
     def show_view(self, new_view):
-        # Si hay una vista actual, se deestruye
+        # Si hay una vista actual, se destruye
         if self.current_view:
             self.current_view.destroy()
 
-        # se muestra la nueva, y no permite que se haga resize
+        # Se muestra la nueva, y no permite que se haga resize
         self.current_view = new_view
         self.resizable(False, False)
         self.current_view.pack()
+
+    def currentOption(self, option):
+        if self.currenOpt:
+            self.currenOpt = None
+        self.currenOpt = option
 
     def RegisteNewUserView(self):
         registerView = NUW.returnNewUserView(self, self.session)
@@ -44,32 +51,33 @@ class App(ctk.CTk):
 
     def menuView(self):
         if self.PermissionLogin:
-            menuView = MV.ReturnMenuView(self, self.session)
+            menuView, opt = MV.ReturnMenuView(self, self.session)
             self.show_view(menuView)
+            self.currentOption(opt)
 
-    def menuOrderView(self):
+    def menuOrderView(self, OrderId=None, Option=None):
         if self.PermissionLogin:
-            menuOrderView = MOV.returnMenuOrderView(self, self.session)
+            menuOrderView = MOV.returnMenuOrderView(self, self.session, OrderId, Option)
             self.show_view(menuOrderView)
 
     def invoiceView(self):
         if self.PermissionLogin:
-            invoiceView = IV.ReturnInvoiceView(self)
+            invoiceView = IV.ReturnInvoiceView(self, self.session)
             self.show_view(invoiceView)
 
     def confirmView(self):
         if self.PermissionLogin:
-            confirmView = CV.ReturnConfirmView(self)
+            confirmView = CV.ReturnConfirmView(self, self.session)
             self.show_view(confirmView)
 
     def rejectView(self):
         if self.PermissionLogin:
-            rejectView = RV.ReturnRejectView(self)
+            rejectView = RV.ReturnRejectView(self, self.session)
             self.show_view(rejectView)
 
-    def selectorView(self):
+    def selectorView(self, option):
         if self.PermissionLogin:
-            selectorView = SO.ReturnSelectorView(self)
+            selectorView = SO.ReturnSelectorView(self, self.session, option)
             self.show_view(selectorView)
 
     def initialize_app(self):

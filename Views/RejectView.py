@@ -1,7 +1,7 @@
 import customtkinter as ctk
 
 
-def ReturnRejectView(parent):
+def ReturnRejectView(parent, session):
     ventana = ctk.CTkFrame(parent, fg_color='#E83845')  # Color de fondo en formato hexadecimal
 
     # Configuración de las columnas

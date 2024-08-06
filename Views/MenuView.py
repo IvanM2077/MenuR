@@ -3,11 +3,9 @@ import os
 from PIL import Image
 import Infraestructure.ViewConfig as IV
 import Infraestructure.Helper as IH
-import Models.Session
 
 Bg1, Bg2, Btn1, Btn2, Btn3, TextColor = IV.GetPalleteColours()
 FontTitle, FontText = IV.getTypeLetters()
-
 
 def ReturnMenuView(parent, session):
     ventana = ctk.CTkFrame(parent, fg_color=Bg1)
@@ -30,12 +28,11 @@ def ReturnMenuView(parent, session):
     Name = session.user.FirstName
     RolUser = session.user.RolId
     RolesPermitidos = session.DataBase.getInstance().getAllRol()
-    RolConfigAdmin, RolConfigEmployee  = IH.enumRol()
+    RolConfigAdmin, RolConfigEmployee = IH.enumRol()
     flagRol = False
     for i, v in enumerate(RolesPermitidos):
         if (RolUser == v.RolId and RolConfigAdmin == v.NameRol):
             flagRol = True
-
 
     # <editor-fold desc="Header">
     # Frame para el encabezado
@@ -66,22 +63,41 @@ def ReturnMenuView(parent, session):
     # Botones
     btn_height = 200  # Altura deseada para los botones
 
-    btn_MenuOrderView = ctk.CTkButton(buttons_frame, text="New Order", fg_color=Btn1, command=parent.menuOrderView, font=FontText, height=btn_height)
+    btn_MenuOrderView = ctk.CTkButton(buttons_frame, text="New Order", fg_color=Btn1, command=lambda: newOrder(parent), font=FontText, height=btn_height)
     btn_MenuOrderView.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
 
-    btn_SelectorOrderView = ctk.CTkButton(buttons_frame, text="Add to Order", fg_color=Btn1, command=parent.selectorView, font=FontText, height=btn_height)
+    btn_SelectorOrderView = ctk.CTkButton(buttons_frame, text="Add to Order", fg_color=Btn1, command=lambda: add2Order(parent), font=FontText, height=btn_height)
     btn_SelectorOrderView.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
 
-    btn_InvoiceView = ctk.CTkButton(buttons_frame, text="Invoice", fg_color=Btn1, command=parent.confirmView, font=(FontText), height=btn_height)
+    btn_InvoiceView = ctk.CTkButton(buttons_frame, text="Invoice", fg_color=Btn1, command=lambda: invoice(parent), font=FontText, height=btn_height)
     btn_InvoiceView.grid(row=0, column=2, padx=10, pady=10, sticky='ew')
 
-    btn_PayView = ctk.CTkButton(buttons_frame, text="Pay", fg_color=Btn1, command=parent.rejectView, font=(FontText), height=btn_height)
+    btn_PayView = ctk.CTkButton(buttons_frame, text="Pay", fg_color=Btn1, command=lambda: payView(parent), font=FontText, height=btn_height)
     btn_PayView.grid(row=1, column=0, padx=10, pady=10, sticky='ew')
+
     if(flagRol):
-        btn_ConfirmPay = ctk.CTkButton(buttons_frame, text="Confirm Pay", fg_color=Btn1, command=parent.selectorView, font=(FontText), height=btn_height)
+        btn_ConfirmPay = ctk.CTkButton(buttons_frame, text="Confirm Pay", fg_color=Btn1, command=lambda: confirmPayView(parent), font=FontText, height=btn_height)
         btn_ConfirmPay.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
     # </editor-fold>
 
+    def newOrder(parent):
+        parent.currentOption(1)
+        parent.menuOrderView()  # Llama a menuOrderView sin parámetros
 
+    def add2Order(parent):
+        parent.currentOption(2)
+        parent.selectorView(parent.currenOpt)
 
-    return ventana
+    def invoice(parent):
+        parent.currentOption(3)
+        parent.selectorView(parent.currenOpt)
+
+    def payView(parent):
+        parent.currentOption(4)
+        parent.selectorView(parent.currenOpt)
+
+    def confirmPayView(parent):
+        parent.currentOption(5)
+        parent.selectorView(parent.currenOpt)
+
+    return ventana, None
