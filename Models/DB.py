@@ -241,6 +241,27 @@ class DB:
             self.connection.rollback()
             return []
 
+    def getAllSalesByOrderId(self, OrderId, UserId):
+        try:
+            con = self.getConnection()
+            cur = con.cursor()
+            cur.execute(f"""
+                SELECT {self.TableSale}.UserId, {self.TableSale}.OrderId, {self.TableSale}.ProductId
+                FROM {self.TableSale}
+                INNER JOIN {self.TableOrder} ON {self.TableSale}.OrderId = {self.TableOrder}.OrderId
+                WHERE {self.TableSale}.OrderId = ? AND {self.TableSale}.UserId = ?
+            """, (OrderId, UserId))
+            results = cur.fetchall()
+            ListResults = []
+            for v in results:
+                aux = Models.Sales.Sales(UserId=v[0], OrderId=v[1], ProductId=v[2])
+                ListResults.append(aux)
+            return ListResults
+        except sq.Error as e:
+            print("Error: ", e)
+            return []
+
+
 #</editor-fold>
 #<editor-fold desc="CreationTables">
 #CREACIÓN DE LAS TABLAS

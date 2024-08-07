@@ -104,7 +104,7 @@ def viewAddProductToOrder(parent, Tblgrid):
         item_values = Tblgrid.item(selected_item)
         order_id = item_values['text']
         print(f"Orden seleccionada: {order_id}")
-        parent.menuOrderView(Option=2, OrderId=order_id)  # Aquí deberías pasar el OrderId o cualquier información relevante
+        parent.menuOrderView(Option=2, OrderId=order_id)
     else:
         messagebox.showwarning("Error", "Debe seleccionar una orden válida")
 
@@ -114,7 +114,7 @@ def viewGetInvoiceOrder(parent, Tblgrid):
         item_values = Tblgrid.item(selected_item)
         order_id = item_values['text']
         print(f"Orden seleccionada: {order_id}")
-        parent.menuOrderView(Option=3, OrderId=order_id)  # Aquí deberías pasar el OrderId o cualquier información relevante
+        parent.menuOrderView(Option=3, OrderId=order_id)
     else:
         messagebox.showwarning("Error", "Debe seleccionar una orden válida")
 
@@ -124,7 +124,7 @@ def viewPayOrder(parent, Tblgrid):
         item_values = Tblgrid.item(selected_item)
         order_id = item_values['text']
         print(f"Orden seleccionada: {order_id}")
-        parent.menuOrderView(Option=2, OrderId=order_id)  # Aquí deberías pasar el OrderId o cualquier información relevante
+        parent.menuOrderView(Option=4, OrderId=order_id)
     else:
         messagebox.showwarning("Error", "Debe seleccionar una orden válida")
 
@@ -134,6 +134,6 @@ def viewPayConfirmOrder(parent, Tblgrid):
         item_values = Tblgrid.item(selected_item)
         order_id = item_values['text']
         print(f"Orden seleccionada: {order_id}")
-        parent.menuOrderView(Option=2, OrderId=order_id)  # Aquí deberías pasar el OrderId o cualquier información relevante
+        parent.menuOrderView(Option=5, OrderId=order_id)
     else:
         messagebox.showwarning("Error", "Debe seleccionar una orden válida")
