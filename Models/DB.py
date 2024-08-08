@@ -261,7 +261,27 @@ class DB:
             print("Error: ", e)
             return []
 
-
+    def insertNewSalesByOrder(self, ListSale, UserId):
+        try:
+            con = self.getConnection()
+            cur = con.cursor()
+            con.execute('BEGIN')
+            cur.execute(f"INSERT INTO {self.TableOrder} (UserId, Payment, PaymentConfirm) VALUES (?, ?, ?)",
+                        (UserId, 0, 0))
+            cur.execute(f"SELECT * FROM {self.TableOrder} WHERE UserId = ? ORDER BY OrderId DESC LIMIT 1", (UserId,))
+            NewOrder = cur.fetchone()
+            if NewOrder:
+                aux = Models.Orders.Orders(NewOrder[0], NewOrder[1], NewOrder[2], NewOrder[3])
+                sales_data = [(aux.UserId, aux.OrderId, sale.ProductId) for sale in ListSale]
+                cur.executemany(f"INSERT INTO {self.TableSale} (UserId, OrderId, ProductId) VALUES (?, ?, ?)",
+                                sales_data)
+            con.commit()
+            print("Valores insertados con éxito.")
+            return True
+        except sq.Error as e:
+            con.rollback()
+            print("Error no se pudo insertar valor: ", e)
+            return False
 #</editor-fold>
 #<editor-fold desc="CreationTables">
 #CREACIÓN DE LAS TABLAS

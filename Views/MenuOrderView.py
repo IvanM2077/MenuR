@@ -6,9 +6,11 @@ from tkinter import messagebox
 import Infraestructure.ViewConfig as IV
 import Infraestructure.Helper as IH
 import Models.Session
+import Models.Sales
 
 Bg1, Bg2, Btn1, Btn2, Btn3, TextColor = IV.GetPalleteColours()
 FontTitle, FontText = IV.getTypeLetters()
+
 
 def returnMenuOrderView(parent, session, OrderId=None, Option=None):
     UserId = session.user.UserId
@@ -56,12 +58,13 @@ def returnMenuOrderView(parent, session, OrderId=None, Option=None):
     btn_height = 200
     col = 0
     row = 0
-
+    listButtons = []
     for i, product in enumerate(ListProducts):
         btn_text = f"{product.Item} - ${product.Price}"
-        btn_MenuOrderView = ctk.CTkButton(buttons_frame, text=btn_text, fg_color=Btn1, command=lambda p=product: parent.menuOrderView(OrderId=OrderId, Option=2), font=FontText, height=btn_height)
-        btn_MenuOrderView.grid(row=row, column=col, padx=10, pady=10, sticky='ew')
 
+        btn_MenuOrderView = ctk.CTkButton(buttons_frame, text=btn_text, fg_color=Btn1, command=lambda p=product: handleButton(parent, p, Tblgrid), font=FontText, height=btn_height)
+        btn_MenuOrderView.grid(row=row, column=col, padx=10, pady=10, sticky='ew')
+        listButtons.append(btn_MenuOrderView)
         col += 1
         if col == 3:
             col = 0
@@ -70,11 +73,9 @@ def returnMenuOrderView(parent, session, OrderId=None, Option=None):
     # Body derecho
     tbl_grid_frame = ctk.CTkFrame(ventana, fg_color=Bg2)
     tbl_grid_frame.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
-
     style = ttk.Style()
     style.configure("Treeview", font=(FontTitle[0], 16))
     style.configure("Treeview.Heading", font=(FontText[0], 16))
-
     Tblgrid = ttk.Treeview(tbl_grid_frame)
     Tblgrid["columns"] = ("#1", "#2")
     Tblgrid.column("#0", width=100)
@@ -93,19 +94,50 @@ def returnMenuOrderView(parent, session, OrderId=None, Option=None):
         ListSale = Db.getAllSalesByOrderId(OrderId, UserId)
         for i, v in enumerate(ListSale):
             aux = findProductById(ListProducts, v.ProductId)
-            Tblgrid.insert(item1, ctk.END, text=f"{i}", values=(aux.Item, aux.Price))
-
+            Tblgrid.insert("", ctk.END, text=f"{1}", values=(aux.Item, aux.Price))
     Tblgrid.pack(fill='both', expand=True)
-
-    # Footer
     btn_BackToMenuView = ctk.CTkButton(ventana, text="Volver al menu", command=lambda: parent.menuView(), font=(FontText))
     btn_BackToMenuView.grid(row=2, column=0, padx=10, pady=20, sticky='ew')
-
-    btn_InvoiceView = ctk.CTkButton(ventana, text="Pedir nota", command=lambda: parent.invoiceView(), font=(FontText))
+    btn_InvoiceView = ctk.CTkButton(ventana, text="Pedir nota", command=lambda: TakeOrder(parent,session,Tblgrid, None, ListProducts, UserId), font=(FontText))
     btn_InvoiceView.grid(row=2, column=1, padx=10, pady=20, sticky='ew')
-
     return ventana
 
+
+def TakeOrder(parent, session, Tblgrid, OrderId, ListProducts, UserId):
+    if OrderId:  # cuando se seleccione una orden que ya exista
+        messagebox.showinfo("Exito", "Orden actualizada con éxito")
+    else:  # cuando sea una nueva orden
+        items = Tblgrid.get_children()
+        ListSales = []
+        for item in items:
+            values = Tblgrid.item(item, 'values')
+            if values:  # Verificar que 'values' no esté vacío
+                product_name = values[0]  # Suponiendo que el nombre del producto está en la primera columna
+                product_id = findIdByProductName(ListProducts, product_name)
+                if product_id:
+                    aux = Models.Sales.Sales(UserId, None, product_id)
+                    ListSales.append(aux)
+
+        flag = session.DataBase.insertNewSalesByOrder(ListSales, UserId)
+        if flag:
+            messagebox.showinfo("Exito", "Orden tomada con éxito")
+            parent.menuView()
+        else:
+            messagebox.showerror("Error", "No se pudo insertar en la base de datos")
+
+
+
+# Resto del código permanece igual
+
+def findIdByProductName(ListProducts, ProductName):
+    for product in ListProducts:
+        if product.Item == ProductName:
+            return product.ProductId
+    return None
+
+
+def handleButton(parent, product, Tblgrid):
+    Tblgrid.insert("", ctk.END, text="1", values=(product.Item, product.Price))
 def findProductById(ListProducts, ProductId):
     for product in ListProducts:
         if product.ProductId == ProductId:
