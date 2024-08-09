@@ -85,41 +85,70 @@ def returnMenuOrderView(parent, session, OrderId=None, Option=None):
     Tblgrid.heading("#1", text="Item")
     Tblgrid.heading("#2", text="Price")
 
+    #Lista para eliminar los productos que ya existen y cuano se cargue primero se haga un bulkdelete y despues un bulkinsert
+    ListOldProducts = []
+    FlagQuery = None
     if OrderId is None:
         print("No. Orden: ", OrderId)
         item1 = Tblgrid.insert("", ctk.END, text="Productos")
+        FlagQuery = False
     else:
         print("No. Orden: ", OrderId)
         item1 = Tblgrid.insert("", ctk.END, text="Productos")
         ListSale = Db.getAllSalesByOrderId(OrderId, UserId)
+        ListOldProducts = ListSale
         for i, v in enumerate(ListSale):
             aux = findProductById(ListProducts, v.ProductId)
             Tblgrid.insert("", ctk.END, text=f"{1}", values=(aux.Item, aux.Price))
+            FlagQuery = True
     Tblgrid.pack(fill='both', expand=True)
     btn_BackToMenuView = ctk.CTkButton(ventana, text="Volver al menu", command=lambda: parent.menuView(), font=(FontText))
     btn_BackToMenuView.grid(row=2, column=0, padx=10, pady=20, sticky='ew')
-    btn_InvoiceView = ctk.CTkButton(ventana, text="Pedir nota", command=lambda: TakeOrder(parent,session,Tblgrid, None, ListProducts, UserId), font=(FontText))
+    btn_InvoiceView = ctk.CTkButton(ventana, text="Pedir nota", command=lambda: TakeOrder(parent,session,Tblgrid, OrderId, ListProducts, UserId, ListOldProducts, FlagQuery), font=(FontText))
     btn_InvoiceView.grid(row=2, column=1, padx=10, pady=20, sticky='ew')
     return ventana
 
 
-def TakeOrder(parent, session, Tblgrid, OrderId, ListProducts, UserId):
+def TakeOrder(parent, session, Tblgrid, OrderId, ListProducts, UserId, ListOldProducts, FlagQuery):
     if OrderId:  # cuando se seleccione una orden que ya exista
-        messagebox.showinfo("Exito", "Orden actualizada con éxito")
+        items = Tblgrid.get_children()
+        print(OrderId)
+        ListSales = []
+        for item in items:
+            values = Tblgrid.item(item, 'values')
+            if values:
+                product_name = values[0]
+                product_id = findIdByProductName(ListProducts, product_name)
+                if product_id:
+                    aux = Models.Sales.Sales(UserId, OrderId, product_id)
+                    ListSales.append(aux)
+
+        OrderObjId = session.DataBase.deleteSalesWithOrderId(ListSales, ListOldProducts, UserId, OrderId)
+        if OrderObjId == OrderId:
+            print(OrderObjId[0], OrderId)
+            flag2 = session.DataBase.InsertSalesWithOrderId(ListSales, ListOldProducts, UserId, OrderId)
+            parent.menuView()
+            messagebox.showinfo("Exito", "Orden actualizada con éxito")
+        else:
+            messagebox.showerror("Error", "No se pudo realizar esta operación")
+
+
+
+
     else:  # cuando sea una nueva orden
         items = Tblgrid.get_children()
         ListSales = []
         for item in items:
             values = Tblgrid.item(item, 'values')
-            if values:  # Verificar que 'values' no esté vacío
-                product_name = values[0]  # Suponiendo que el nombre del producto está en la primera columna
+            if values:
+                product_name = values[0]
                 product_id = findIdByProductName(ListProducts, product_name)
                 if product_id:
                     aux = Models.Sales.Sales(UserId, None, product_id)
                     ListSales.append(aux)
 
-        flag = session.DataBase.insertNewSalesByOrder(ListSales, UserId)
-        if flag:
+        OrderObjId = session.DataBase.insertNewSalesByOrder(ListSales, UserId, FlagQuery)
+        if OrderObjId:
             messagebox.showinfo("Exito", "Orden tomada con éxito")
             parent.menuView()
         else:

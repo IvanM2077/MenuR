@@ -261,20 +261,55 @@ class DB:
             print("Error: ", e)
             return []
 
-    def insertNewSalesByOrder(self, ListSale, UserId):
+    def insertNewSalesByOrder(self, ListSale, UserId, FlagQuery):
         try:
+            if FlagQuery == False:
+                con = self.getConnection()
+                cur = con.cursor()
+                con.execute('BEGIN')
+                cur.execute(f"INSERT INTO {self.TableOrder} (UserId, Payment, PaymentConfirm) VALUES (?, ?, ?)",(UserId, 0, 0))
+                cur.execute(f"SELECT * FROM {self.TableOrder} WHERE UserId = ? ORDER BY OrderId DESC LIMIT 1", (UserId,))
+                NewOrder = cur.fetchone()
+                if NewOrder:
+                    aux = Models.Orders.Orders(NewOrder[0], NewOrder[1], NewOrder[2], NewOrder[3])
+                    sales_data = [(aux.UserId, aux.OrderId, sale.ProductId) for sale in ListSale]
+                    cur.executemany(f"INSERT INTO {self.TableSale} (UserId, OrderId, ProductId) VALUES (?, ?, ?)",
+                                    sales_data)
+                con.commit()
+                print("Valores insertados con éxito.")
+                return True
+            else:
+                return False
+        except sq.Error as e:
+            con.rollback()
+            print("Error no se pudo insertar valor: ", e)
+            return False
+
+    def deleteSalesWithOrderId(self, ListSale, OldListSale, UserId, OrderId):
+        try:
+            print(UserId, OrderId, ListSale)
             con = self.getConnection()
             cur = con.cursor()
             con.execute('BEGIN')
-            cur.execute(f"INSERT INTO {self.TableOrder} (UserId, Payment, PaymentConfirm) VALUES (?, ?, ?)",
-                        (UserId, 0, 0))
-            cur.execute(f"SELECT * FROM {self.TableOrder} WHERE UserId = ? ORDER BY OrderId DESC LIMIT 1", (UserId,))
-            NewOrder = cur.fetchone()
-            if NewOrder:
-                aux = Models.Orders.Orders(NewOrder[0], NewOrder[1], NewOrder[2], NewOrder[3])
-                sales_data = [(aux.UserId, aux.OrderId, sale.ProductId) for sale in ListSale]
-                cur.executemany(f"INSERT INTO {self.TableSale} (UserId, OrderId, ProductId) VALUES (?, ?, ?)",
-                                sales_data)
+            cur.execute(f"DELETE FROM {self.TableSale} WHERE UserId = ? AND OrderId = ?", (UserId, OrderId))
+            cur.execute(f"SELECT * FROM {self.TableOrder} WHERE UserId = ? AND OrderId = ? LIMIT 1", (UserId, OrderId))
+            Order = cur.fetchone()
+            con.commit()
+            return OrderId
+        except sq.Error as e:
+            con.rollback()
+            print("Error no se pudo insertar valor: ", e)
+            return False
+
+    def InsertSalesWithOrderId(self, ListSale, OldListSale, UserId, OrderId):
+        try:
+            print(UserId, OrderId, ListSale)
+            con = self.getConnection()
+            cur = con.cursor()
+            con.execute('BEGIN')
+            sales_data = [(UserId, OrderId, sale.ProductId) for sale in ListSale]
+            if sales_data and OrderId:
+                cur.executemany(f"INSERT INTO {self.TableSale} (UserId, OrderId, ProductId) VALUES (?, ?, ?)", sales_data)
             con.commit()
             print("Valores insertados con éxito.")
             return True

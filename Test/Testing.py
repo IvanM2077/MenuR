@@ -59,4 +59,20 @@ def test():
         print(f"Error al obtener órdenes por UserId: {e}")
 
 
-test()
+def test_eliminar_ventas(session, UserId, OrderId):
+    # Mostrar los registros antes de la eliminación
+    print("Registros antes de la eliminación:")
+    ventas_antes = session.DataBase.getSalesByUserIdAndOrderId(UserId, OrderId)
+    for venta in ventas_antes:
+        print(venta)
+
+    # Llama a la función que debería eliminar las ventas
+    session.DataBase.insertSalesWithOrderId([], [], UserId, OrderId)
+
+    # Mostrar los registros después de la eliminación
+    print("Registros después de la eliminación:")
+    ventas_despues = session.DataBase.getSalesByUserIdAndOrderId(UserId, OrderId)
+    for venta in ventas_despues:
+        print(venta)
+
+test_eliminar_ventas()
