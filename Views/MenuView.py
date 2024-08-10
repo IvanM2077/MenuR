@@ -26,13 +26,13 @@ def ReturnMenuView(parent, session):
     LogoApp = ctk.CTkImage(logo_image, size=(80, 80))
 
     Name = session.user.FirstName
-    RolUser = session.user.RolId
-    RolesPermitidos = session.DataBase.getInstance().getAllRol()
-    RolConfigAdmin, RolConfigEmployee = IH.enumRol()
-    flagRol = False
-    for i, v in enumerate(RolesPermitidos):
-        if (RolUser == v.RolId and RolConfigAdmin == v.NameRol):
-            flagRol = True
+    #RolUser = session.user.RolId
+    #RolesPermitidos = session.DataBase.getInstance().getAllRol()
+    #RolConfigAdmin, RolConfigEmployee = IH.enumRol()
+    #flagRol = False
+    #for i, v in enumerate(RolesPermitidos):
+    #    if (RolUser == v.RolId and RolConfigAdmin == v.NameRol):
+    #        flagRol = True
 
     # <editor-fold desc="Header">
     # Frame para el encabezado
@@ -75,7 +75,7 @@ def ReturnMenuView(parent, session):
     btn_PayView = ctk.CTkButton(buttons_frame, text="Pay", fg_color=Btn1, command=lambda: payView(parent), font=FontText, height=btn_height)
     btn_PayView.grid(row=1, column=0, padx=10, pady=10, sticky='ew')
 
-    if(flagRol):
+    if(parent.rol):
         btn_ConfirmPay = ctk.CTkButton(buttons_frame, text="Confirm Pay", fg_color=Btn1, command=lambda: confirmPayView(parent), font=FontText, height=btn_height)
         btn_ConfirmPay.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
     # </editor-fold>

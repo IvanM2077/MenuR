@@ -138,6 +138,29 @@ class DB:
         except sq.Error as e:
             print(f"Error al crear la tabla {self.TableSale}: {e}")
             self.connection.rollback()
+
+    def getAllUsersByIds(self, listIds):
+        try:
+            if not listIds:
+                print("Lista vacía")
+                return []
+            cur = self.getConnection().cursor()
+            cur.execute("BEGIN")
+            placeholders = ', '.join(['?'] * len(listIds))
+            query = f"SELECT * FROM {self.TableUser} WHERE UserId IN ({placeholders})"
+            cur.execute(query, listIds)
+            UsersQuerys = cur.fetchall()
+            ListOfUsers = []
+            for obj in UsersQuerys:
+                aux = Models.User.User(obj[0], obj[1], obj[2], obj[3], obj[4], obj[5])
+                ListOfUsers.append(aux)
+            self.connection.commit()
+            return ListOfUsers
+        except sq.Error as e:
+            self.connection.rollback()
+            print("Error, no se pudieron obtener todos los usuarios:", e)
+            return None
+
     def getAllRol(self):
         try:
             cur = self.getConnection().cursor()
@@ -193,21 +216,24 @@ class DB:
             user_data = cur.fetchone()
             if user_data:
                 if user_data[3] == Email and user_data[4] == Password:
-                    return Models.User.User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4],
-                                            user_data[5])
+                    return Models.User.User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[5])
                 if user_data[3] == Email and user_data[3] != Password:
                     return False
+                self.connection.commit()
             else:
+                self.connection.commit()
                 return None
+
         except sq.Error as e:
+            self.connection.rollback()
             print("Error al consultar el usuario y/o contraseña: ", e)
             return None
+
 
     def InsertNewUser(self, User):
         try:
             cur = self.getConnection().cursor()
-            cur.execute(f'''INSERT INTO {self.TableUser} (FirstName, LastName, Email, Password, RolId) VALUES (?, ?, ?, ?, ?)''',
-                        (User.FirstName, User.LastName, User.Email, User.Password, User.RolId))
+            cur.execute(f'''INSERT INTO {self.TableUser} (FirstName, LastName, Email, Password, RolId) VALUES (?, ?, ?, ?, ?)''',(User.FirstName, User.LastName, User.Email, User.Password, User.RolId))
             self.connection.commit()
             return True
         except sq.Error as e:
@@ -215,9 +241,35 @@ class DB:
             self.connection.rollback()
             return False
 
-    def getAllOrderById(self, UserId):
+    def getAllOrder(self):
         try:
             cur = self.getConnection().cursor()
+            cur.execute(f'''
+                   SELECT {self.TableUser}.UserId, {self.TableOrder}.OrderId, {self.TableOrder}.Payment, {self.TableOrder}.PaymentConfirm
+                   FROM {self.TableUser}
+                   INNER JOIN {self.TableOrder} ON {self.TableUser}.UserId = {self.TableOrder}.UserId
+                    ''' )
+            ListOrders = cur.fetchall()
+            if ListOrders != None:
+                List = []
+                for order in ListOrders:
+                    aux = Models.Orders.Orders(order[1], order[0], order[2], order[3])
+                    List.append(aux)
+                self.connection.commit()
+                return List
+            else:
+                self.connection.commit()
+                print("No orders found for the given UserId.")
+                return []
+
+        except sq.Error as e:
+            print(f"Error al obtener el listado de órdenes: {e}")
+            self.connection.rollback()
+            return []
+    def getAllOrderById(self, UserId):
+        try:
+            con = self.getConnection()
+            cur = con.cursor()
             cur.execute(f'''
                 SELECT {self.TableUser}.UserId, {self.TableOrder}.OrderId, {self.TableOrder}.Payment, {self.TableOrder}.PaymentConfirm
                 FROM {self.TableUser}
@@ -230,9 +282,10 @@ class DB:
                 for order in ListOrders:
                     aux = Models.Orders.Orders(order[1], order[0], order[2], order[3])
                     List.append(aux)
-                self.connection.commit()
+                con.commit()
                 return List
             else:
+                con.commit()
                 print("No orders found for the given UserId.")
                 return []
 
@@ -258,8 +311,10 @@ class DB:
                 ListResults.append(aux)
             return ListResults
         except sq.Error as e:
+            self.connection.rollback()
             print("Error: ", e)
             return []
+
 
     def insertNewSalesByOrder(self, ListSale, UserId, FlagQuery):
         try:
@@ -281,7 +336,7 @@ class DB:
             else:
                 return False
         except sq.Error as e:
-            con.rollback()
+            self.connection.rollback()
             print("Error no se pudo insertar valor: ", e)
             return False
 

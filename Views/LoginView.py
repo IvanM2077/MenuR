@@ -114,9 +114,18 @@ def verifyEmailAndPass(parent, TextBoxEmail, TextBoxPassword):
         User = session.DataBase.consultEmail(email, PasswordSubmit)
         if User is not None:
             if User.Email == email and User.Password == PasswordSubmit:
-                parent.PermissionLogin = True
+                RolUser = User.RolId
+                RolesPermitidos = session.DataBase.getInstance().getAllRol()
+                RolConfigAdmin, RolConfigEmployee = IH.enumRol()
+                flagRol = False
+                for i, v in enumerate(RolesPermitidos):
+                    if (RolUser == v.RolId and RolConfigAdmin == v.NameRol):
+                        flagRol = True
+                        parent.rol = flagRol
                 messagebox.showinfo("Éxito", "Login exitoso")
                 session.user = User
+                session.rol = flagRol
+                parent.PermissionLogin = True
                 parent.menuView()
             if User.Email == email and User.Password != PasswordSubmit:
                 messagebox.showwarning("Advertencia", "Contraseña Incorrecta")

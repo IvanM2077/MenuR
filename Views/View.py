@@ -22,6 +22,7 @@ class App(ctk.CTk):
         self.title("Aplicación gestión de restaurantes")
         self.current_view = None  # Para mantener un seguimiento de la vista actual
         self.session = None
+        self.rol = False
         self.PermissionLogin = False
         self.currenOpt = None
 
@@ -60,9 +61,9 @@ class App(ctk.CTk):
             menuOrderView = MOV.returnMenuOrderView(self, self.session, OrderId, Option)
             self.show_view(menuOrderView)
 
-    def invoiceView(self):
+    def invoiceView(self, OrderId =None, UserIdEmployee=None):
         if self.PermissionLogin:
-            invoiceView = IV.ReturnInvoiceView(self, self.session)
+            invoiceView = IV.ReturnInvoiceView(self, self.session, OrderId, UserIdEmployee)
             self.show_view(invoiceView)
 
     def confirmView(self):

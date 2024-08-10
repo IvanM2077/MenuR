@@ -12,6 +12,28 @@ FontTitle, FontText = IV.getTypeLetters()
 def ReturnSelectorView(parent, session, option):
     ventana = ctk.CTkFrame(parent, fg_color='#41436A')
 
+    ListOfOrders = None
+    ListUsers = None
+    listNoPaid = []
+    listProcess = []
+    listPaid = []
+    dictionary = {}
+
+    if (parent.rol):
+        session = Models.Session.Session.getInstance()
+        ListOfOrders = session.DataBase.getAllOrder()
+        ListIds = [(Ids.UserId) for Ids in ListOfOrders]
+        ListUsers = session.DataBase.getAllUsersByIds(ListIds)
+        if ListUsers:
+            dictionary = {user.UserId: user.FirstName for user in ListUsers}
+
+    else:
+        # Obtener instancia de sesión y órdenes del usuario
+        session = Models.Session.Session.getInstance()
+        ListOfOrders = session.DataBase.getAllOrderById(session.user.UserId)
+        # session.ListOrders = ListOfOrders
+    listNoPaid, listProcess, listPaid = convertListModelOrders(ListOfOrders, listNoPaid, listProcess, listPaid)
+
     # Configuración de las columnas y filas para centrado
     for i in range(8):
         ventana.grid_columnconfigure(i, weight=1)
@@ -23,56 +45,52 @@ def ReturnSelectorView(parent, session, option):
     lbl.grid(row=1, column=3, columnspan=2, padx=10, pady=20, sticky='n')  # Centrar el label de bienvenida
 
     ventana.pack(fill='both', expand=True)
-
-    # Obtener instancia de sesión y órdenes del usuario
-    session = Models.Session.Session.getInstance()
-    ListOfOrders = session.DataBase.getAllOrderById(session.user.UserId)
-    session.ListOrders = ListOfOrders
-    listNoPaid = []
-    listProcess = []
-    listPaid = []
-
-    for obj in ListOfOrders:
-        if not obj.Payment and not obj.PaymentConfirm:
-            listNoPaid.append(obj)
-        elif obj.Payment and not obj.PaymentConfirm:
-            listProcess.append(obj)
-        elif obj.Payment and obj.PaymentConfirm:
-            listPaid.append(obj)
-
     # Crear un estilo para Treeview y aplicar fuente grande
     style = ttk.Style()
     style.configure("Treeview", font=(FontTitle[0], 16))
     style.configure("Treeview.Heading", font=(FontText[0], 16))
 
     Tblgrid = ttk.Treeview(ventana)
-    Tblgrid["columns"] = ("#1", "#2")
+    Tblgrid["columns"] = ("#1", "#2", "#3")
     Tblgrid.column("#0", width=100)
     Tblgrid.column("#1", width=100)
     Tblgrid.column("#2", width=100)
+    Tblgrid.column("#3", width=100)
     Tblgrid.heading("#0", text="No. Orden")
     Tblgrid.heading("#1", text="Pago cliente")
     Tblgrid.heading("#2", text="Confirmación aceptacion del pago")
-
+    Tblgrid.heading("#3", text="Empleado")
     Tblgrid.grid(row=2, column=0, columnspan=8, padx=10, pady=20, sticky='nsew')
 
     item1 = Tblgrid.insert("", ctk.END, text="Ordenes no pagadas")
     for v in listNoPaid:
         aux = "Sí" if v.Payment else "No"
         aux2 = "Sí" if v.PaymentConfirm else "No"
-        Tblgrid.insert(item1, ctk.END, text=f"{v.OrderId}", values=(aux, aux2))
+        if(parent.rol):
+            aux3 = dictionary.get(v.UserId)
+            Tblgrid.insert(item1, ctk.END, text=f"{v.OrderId}", values=(aux, aux2,aux3))
+        else:
+            Tblgrid.insert(item1, ctk.END, text=f"{v.OrderId}", values=(aux, aux2, "Yo"))
 
     item2 = Tblgrid.insert("", ctk.END, text="Ordenes en proceso de pago")
     for v in listProcess:
         aux = "Sí" if v.Payment else "No"
         aux2 = "Sí" if v.PaymentConfirm else "No"
-        Tblgrid.insert(item2, ctk.END, text=f"{v.OrderId}", values=(aux, aux2))
+        if(parent.rol):
+            aux3 = dictionary.get(v.UserId)
+            Tblgrid.insert(item2, ctk.END, text=f"{v.OrderId}", values=(aux, aux2, aux3))
+        else:
+            Tblgrid.insert(item2, ctk.END, text=f"{v.OrderId}", values=(aux, aux2, "Yo"))
 
     item3 = Tblgrid.insert("", ctk.END, text="Ordenes pagadas")
     for v in listPaid:
         aux = "Sí" if v.Payment else "No"
         aux2 = "Sí" if v.PaymentConfirm else "No"
-        Tblgrid.insert(item3, ctk.END, text=f"{v.OrderId}", values=(aux, aux2))
+        if(parent.rol):
+            aux3 = dictionary.get(v.UserId)
+            Tblgrid.insert(item3, ctk.END, text=f"{v.OrderId}", values=(aux, aux2, aux3))
+        else:
+            Tblgrid.insert(item3, ctk.END, text=f"{v.OrderId}", values=(aux, aux2, "Yo"))
 
     # Botón para agregar producto a la orden
     if option == 2:  # si selecciona la opcion menu 2 order
@@ -108,13 +126,17 @@ def viewAddProductToOrder(parent, Tblgrid):
     else:
         messagebox.showwarning("Error", "Debe seleccionar una orden válida")
 
-def viewGetInvoiceOrder(parent, Tblgrid):
+def viewGetInvoiceOrder(parent, Tblgrid ):
     selected_item = Tblgrid.selection()
-    if selected_item:
+    if selected_item and parent.rol == False:
         item_values = Tblgrid.item(selected_item)
-        order_id = item_values['text']
+        order_id = item_values['No. Orden']
         print(f"Orden seleccionada: {order_id}")
-        parent.menuOrderView(Option=3, OrderId=order_id)
+        parent.invoiceView(OrderId=order_id, UserIdEmployee=None)
+    if (selected_item and parent.rol):
+        UserIdEmployee = item_values['Empleado']
+        parent.menuOrderView(OrderId=order_id, UserIdEmployee=None)
+        pass
     else:
         messagebox.showwarning("Error", "Debe seleccionar una orden válida")
 
@@ -125,6 +147,8 @@ def viewPayOrder(parent, Tblgrid):
         order_id = item_values['text']
         print(f"Orden seleccionada: {order_id}")
         parent.menuOrderView(Option=4, OrderId=order_id)
+    if(selected_item and parent.rol):
+        pass
     else:
         messagebox.showwarning("Error", "Debe seleccionar una orden válida")
 
@@ -135,5 +159,18 @@ def viewPayConfirmOrder(parent, Tblgrid):
         order_id = item_values['text']
         print(f"Orden seleccionada: {order_id}")
         parent.menuOrderView(Option=5, OrderId=order_id)
+    if(selected_item and parent.rol):
+        pass
     else:
         messagebox.showwarning("Error", "Debe seleccionar una orden válida")
+
+
+def convertListModelOrders(ListOfOrders, listNoPaid, listProcess, listPaid):
+    for obj in ListOfOrders:
+        if not obj.Payment and not obj.PaymentConfirm:
+            listNoPaid.append(obj)
+        elif obj.Payment and not obj.PaymentConfirm:
+            listProcess.append(obj)
+        elif obj.Payment and obj.PaymentConfirm:
+            listPaid.append(obj)
+    return listNoPaid, listProcess, listPaid

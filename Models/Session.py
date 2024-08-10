@@ -9,6 +9,7 @@ import Models.DB
 class Session:
     _instance = None
     user = None
+    rol = None
     ListProducts = None
     ListOrders = None
     ListSales = None
