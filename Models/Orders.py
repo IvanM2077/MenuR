@@ -10,5 +10,3 @@ class Orders:
         self.UserId =UserId
         self.Payment = Payment
         self.PaymentConfirm = PaymentConfirm
-
-Ordenes = Orders("a","b")

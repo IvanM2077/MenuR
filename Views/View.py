@@ -56,9 +56,9 @@ class App(ctk.CTk):
             self.show_view(menuView)
             self.currentOption(opt)
 
-    def menuOrderView(self, OrderId=None, Option=None):
+    def menuOrderView(self, OrderId=None, UserIdEmployee=None):
         if self.PermissionLogin:
-            menuOrderView = MOV.returnMenuOrderView(self, self.session, OrderId, Option)
+            menuOrderView = MOV.returnMenuOrderView(self, self.session, OrderId, UserIdEmployee)
             self.show_view(menuOrderView)
 
     def invoiceView(self, OrderId =None, UserIdEmployee=None):

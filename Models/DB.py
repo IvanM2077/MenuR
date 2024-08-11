@@ -9,10 +9,8 @@ import Models.Rol
 import Models.Product
 import Models.Sales
 from Infraestructure.DatabaseConfig import getDataBaseNames  # Asegúrate de que la importación sea correcta
-
 # Obtén los nombres de la base de datos y tablas
 nameDB, TableUser, TableOrder, TableProducts, TableRol, TableSale = getDataBaseNames()
-
 class DB:
     _instance = None  # Única instancia
 
@@ -48,6 +46,8 @@ class DB:
             self.connection.close()
             self.connection = None
 
+
+    # <editor-fold desc="CreationTables">
     def createTables(self):
         self.CreateTableRolId()
         self.CreateTableUser()
@@ -139,28 +139,60 @@ class DB:
             print(f"Error al crear la tabla {self.TableSale}: {e}")
             self.connection.rollback()
 
-    def getAllUsersByIds(self, listIds):
+    # </editor-fold>
+    #----------------------------------------------------------------------------------------------
+    # <editor-fold desc="QueryNewUser">
+    def consultPasswordAndEmail(self, Email, Password):
         try:
-            if not listIds:
-                print("Lista vacía")
-                return []
             cur = self.getConnection().cursor()
-            cur.execute("BEGIN")
-            placeholders = ', '.join(['?'] * len(listIds))
-            query = f"SELECT * FROM {self.TableUser} WHERE UserId IN ({placeholders})"
-            cur.execute(query, listIds)
-            UsersQuerys = cur.fetchall()
-            ListOfUsers = []
-            for obj in UsersQuerys:
-                aux = Models.User.User(obj[0], obj[1], obj[2], obj[3], obj[4], obj[5])
-                ListOfUsers.append(aux)
+            cur.execute(f'''SELECT * FROM {self.TableUser} WHERE {self.TableUser}.Email = ? AND {self.TableUser}.Password = ?''',(Email,Password))
+            user_data = cur.fetchone()
+            if user_data:
+                if user_data[3] == Email and user_data[4] == Password:
+                    return Models.User.User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[5])
+                if user_data[3] == Email and user_data[3] != Password:
+                    return False
+            else:
+                return None
+        except sq.Error as e:
+            print("Error al consultar el usuario y/o contraseña: ", e)
+            return None
+    def InsertNewUser(self, User):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute(
+                f'''INSERT INTO {self.TableUser} (FirstName, LastName, Email, Password, RolId) VALUES (?, ?, ?, ?, ?)''',
+                (User.FirstName, User.LastName, User.Email, User.Password, User.RolId))
             self.connection.commit()
-            return ListOfUsers
+            return True
+        except sq.Error as e:
+            print(f"Error no se pudo agregar el usuario: {e}")
+            self.connection.rollback()
+            return False
+
+    # </editor-fold>
+    #----------------------------------------------------------------------------------------------
+    # <editor-fold desc="QueryLogin">
+
+    def consultEmail(self, Email, PasswordEncrypted):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute(f'''SELECT * FROM {self.TableUser} WHERE {self.TableUser}.Email = ?''', (Email,))
+            user_data = cur.fetchone()
+            if user_data:
+                if user_data[3] == Email and user_data[4] == PasswordEncrypted:
+                    return Models.User.User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[5])
+                if user_data[3] == Email and user_data[3] != PasswordEncrypted:
+                    return False
+                self.connection.commit()
+            else:
+                self.connection.commit()
+                return None
+
         except sq.Error as e:
             self.connection.rollback()
-            print("Error, no se pudieron obtener todos los usuarios:", e)
+            print("Error al consultar el usuario y/o contraseña: ", e)
             return None
-
     def getAllRol(self):
         try:
             cur = self.getConnection().cursor()
@@ -177,70 +209,16 @@ class DB:
                 print("No existe valores en la db")
         except sq.Error as e:
             print("Error al consultar los roles: ", e)
-    def getAllProducts(self):
-        try:
-            cur = self.getConnection().cursor()
-            cur.execute(f"SELECT * FROM {self.TableProducts}")
-            ProductsDb = cur.fetchall()
-            ProductsFound = []
-            for i, v in enumerate(ProductsDb):
-                aux = Models.Product.Product(v[0], v[1], v[2], v[3])
-                ProductsFound.append(aux)
-            if(ProductsFound is not None):
-                return ProductsFound
-            else:
-                return None
-                print("No existe valores en la db")
-        except sq.Error as e:
-            print("Error al consultar los productos: ", e)
-    def consultPasswordAndEmail(self, Email, Password):
-        try:
-            cur = self.getConnection().cursor()
-            cur.execute(f'''SELECT * FROM {self.TableUser} WHERE {self.TableUser}.Email = ? AND {self.TableUser}.Password = ?''',(Email,Password))
-            user_data = cur.fetchone()
-            if user_data:
-                if user_data[3] == Email and user_data[4] == Password:
-                    return Models.User.User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[5])
-                if user_data[3] == Email and user_data[3] != Password:
-                    return False
-            else:
-                return None
-        except sq.Error as e:
-            print("Error al consultar el usuario y/o contraseña: ", e)
-            return None
+    # </editor-fold>
+    #----------------------------------------------------------------------------------------------
+    # <editor-fold desc="QueryMenu">
 
-    def consultEmail(self, Email, Password):
-        try:
-            cur = self.getConnection().cursor()
-            cur.execute(f'''SELECT * FROM {self.TableUser} WHERE {self.TableUser}.Email = ?''', (Email,))
-            user_data = cur.fetchone()
-            if user_data:
-                if user_data[3] == Email and user_data[4] == Password:
-                    return Models.User.User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[5])
-                if user_data[3] == Email and user_data[3] != Password:
-                    return False
-                self.connection.commit()
-            else:
-                self.connection.commit()
-                return None
-
-        except sq.Error as e:
-            self.connection.rollback()
-            print("Error al consultar el usuario y/o contraseña: ", e)
-            return None
+    #no se usa ninguna query
 
 
-    def InsertNewUser(self, User):
-        try:
-            cur = self.getConnection().cursor()
-            cur.execute(f'''INSERT INTO {self.TableUser} (FirstName, LastName, Email, Password, RolId) VALUES (?, ?, ?, ?, ?)''',(User.FirstName, User.LastName, User.Email, User.Password, User.RolId))
-            self.connection.commit()
-            return True
-        except sq.Error as e:
-            print(f"Error no se pudo agregar el usuario: {e}")
-            self.connection.rollback()
-            return False
-
+    # </editor-fold>
+    #----------------------------------------------------------------------------------------------
+    # <editor-fold desc="QuerySelector">
     def getAllOrder(self):
         try:
             cur = self.getConnection().cursor()
@@ -266,6 +244,29 @@ class DB:
             print(f"Error al obtener el listado de órdenes: {e}")
             self.connection.rollback()
             return []
+
+    def getAllUsersByIds(self, listIds):
+        try:
+            if not listIds:
+                print("Lista vacía")
+                return []
+            cur = self.getConnection().cursor()
+            cur.execute("BEGIN")
+            placeholders = ', '.join(['?'] * len(listIds))
+            query = f"SELECT * FROM {self.TableUser} WHERE UserId IN ({placeholders})"
+            cur.execute(query, listIds)
+            UsersQuerys = cur.fetchall()
+            ListOfUsers = []
+            for obj in UsersQuerys:
+                aux = Models.User.User(obj[0], obj[1], obj[2], obj[3], obj[4], obj[5])
+                ListOfUsers.append(aux)
+            self.connection.commit()
+            return ListOfUsers
+        except sq.Error as e:
+            self.connection.rollback()
+            print("Error, no se pudieron obtener todos los usuarios:", e)
+            return None
+
     def getAllOrderById(self, UserId):
         try:
             con = self.getConnection()
@@ -293,29 +294,11 @@ class DB:
             print(f"Error al obtener el listado de órdenes: {e}")
             self.connection.rollback()
             return []
-
-    def getAllSalesByOrderId(self, OrderId, UserId):
-        try:
-            con = self.getConnection()
-            cur = con.cursor()
-            cur.execute(f"""
-                SELECT {self.TableSale}.UserId, {self.TableSale}.OrderId, {self.TableSale}.ProductId
-                FROM {self.TableSale}
-                INNER JOIN {self.TableOrder} ON {self.TableSale}.OrderId = {self.TableOrder}.OrderId
-                WHERE {self.TableSale}.OrderId = ? AND {self.TableSale}.UserId = ?
-            """, (OrderId, UserId))
-            results = cur.fetchall()
-            ListResults = []
-            for v in results:
-                aux = Models.Sales.Sales(UserId=v[0], OrderId=v[1], ProductId=v[2])
-                ListResults.append(aux)
-            return ListResults
-        except sq.Error as e:
-            self.connection.rollback()
-            print("Error: ", e)
-            return []
-
-
+    # </editor-fold>
+    #----------------------------------------------------------------------------------------------
+    # <editor-fold desc="QueryMenuOrder">
+    #-------------------------------------------------
+    # <editor-fold desc="QueryMenuOrderNewSale">
     def insertNewSalesByOrder(self, ListSale, UserId, FlagQuery):
         try:
             if FlagQuery == False:
@@ -339,7 +322,48 @@ class DB:
             self.connection.rollback()
             print("Error no se pudo insertar valor: ", e)
             return False
-
+    # </editor-fold>
+    #-------------------------------------------------
+    # <editor-fold desc="QueryMenuOrderSaleThatExists">
+    def FindUserIdByOrderId(self, OrderId):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute('BEGIN')
+            cur.execute(f"SELECT * FROM {self.TableOrder} WHERE OrderId = ?", (OrderId,))
+            Obj = cur.fetchone()
+            UserId = None
+            if Obj:
+                aux = Models.Orders.Orders(Obj[0], Obj[1], Obj[2], Obj[3])
+                UserId = aux.UserId
+                self.connection.commit()
+                return UserId
+            else:
+                self.connection.commit()
+                return UserId
+        except sq.Error as e:
+            self.connection.rollback()
+            print("Error no se pudo realizar la consulta: ", e)
+            return None
+    def getAllSalesByOrderIdAndUserId(self, OrderId, UserId):
+        try:
+            con = self.getConnection()
+            cur = con.cursor()
+            cur.execute(f"""
+                SELECT {self.TableSale}.UserId, {self.TableSale}.OrderId, {self.TableSale}.ProductId
+                FROM {self.TableSale}
+                INNER JOIN {self.TableOrder} ON {self.TableSale}.OrderId = {self.TableOrder}.OrderId
+                WHERE {self.TableSale}.OrderId = ? AND {self.TableSale}.UserId = ?
+            """, (OrderId, UserId))
+            results = cur.fetchall()
+            ListResults = []
+            for v in results:
+                aux = Models.Sales.Sales(UserId=v[0], OrderId=v[1], ProductId=v[2])
+                ListResults.append(aux)
+            return ListResults
+        except sq.Error as e:
+            self.connection.rollback()
+            print("Error: ", e)
+            return []
     def deleteSalesWithOrderId(self, ListSale, OldListSale, UserId, OrderId):
         try:
             print(UserId, OrderId, ListSale)
@@ -355,7 +379,6 @@ class DB:
             con.rollback()
             print("Error no se pudo insertar valor: ", e)
             return False
-
     def InsertSalesWithOrderId(self, ListSale, OldListSale, UserId, OrderId):
         try:
             print(UserId, OrderId, ListSale)
@@ -372,7 +395,51 @@ class DB:
             con.rollback()
             print("Error no se pudo insertar valor: ", e)
             return False
+    # </editor-fold>
+    #----------------------------------------------------------------------------------------------
+    # </editor-fold>
+    #----------------------------------------------------------------------------------------------
+    # <editor-fold desc="CommonQuery">
+    def getAllProducts(self):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute(f"SELECT * FROM {self.TableProducts}")
+            ProductsDb = cur.fetchall()
+            ProductsFound = []
+            for i, v in enumerate(ProductsDb):
+                aux = Models.Product.Product(v[0], v[1], v[2], v[3])
+                ProductsFound.append(aux)
+            if(ProductsFound is not None):
+                return ProductsFound
+            else:
+                return None
+                print("No existe valores en la db")
+        except sq.Error as e:
+            print("Error al consultar los productos: ", e)
+    # </editor-fold>
+    #----------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 #</editor-fold>
+
+
+
+
+
+
+
+
+
 #<editor-fold desc="CreationTables">
 #CREACIÓN DE LAS TABLAS
 #Roles
@@ -485,6 +552,7 @@ def createUser(FirstName, LastName, Email, Password):
         else:
             return False
     except Exception as e:
+        print("Error en la query createUser()")
         return False
 def updateUser(id,Fname, LName):
     con = sq.connect(nameDB)
@@ -494,6 +562,7 @@ def updateUser(id,Fname, LName):
         con.commit()
         con.close()
     except Exception as e:
+        print("Error en la query updateUser()")
         return False
 def deleteUser(id):
     con = sq.connect(nameDB)
@@ -504,6 +573,7 @@ def deleteUser(id):
         con.close()
         return True
     except Exception as e:
+        print("Error en la query deleteUser()")
         return False
 def getUserById(id):
     con = sq.connect(nameDB)

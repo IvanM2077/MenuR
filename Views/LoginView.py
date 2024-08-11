@@ -115,7 +115,7 @@ def verifyEmailAndPass(parent, TextBoxEmail, TextBoxPassword):
         if User is not None:
             if User.Email == email and User.Password == PasswordSubmit:
                 RolUser = User.RolId
-                RolesPermitidos = session.DataBase.getInstance().getAllRol()
+                RolesPermitidos = session.DataBase.getAllRol()
                 RolConfigAdmin, RolConfigEmployee = IH.enumRol()
                 flagRol = False
                 for i, v in enumerate(RolesPermitidos):

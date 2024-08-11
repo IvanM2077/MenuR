@@ -12,8 +12,15 @@ Bg1, Bg2, Btn1, Btn2, Btn3, TextColor = IV.GetPalleteColours()
 FontTitle, FontText = IV.getTypeLetters()
 
 
-def returnMenuOrderView(parent, session, OrderId=None, Option=None):
+def returnMenuOrderView(parent, session, OrderId=None, UserIdEmployee=None ):
     UserId = session.user.UserId
+    Name = session.user.FirstName
+    session.DataBase.getInstance()
+    ListProducts = session.DataBase.getAllProducts()
+    UserIdEmployee =None
+    if (parent.rol):
+        UserIdEmployee = session.DataBase.FindUserIdByOrderId(OrderId)
+    print("Id Employee: ", UserIdEmployee, "Id Session: ", UserId)
     ventana = ctk.CTkFrame(parent, fg_color=Bg1)
     ventana.pack(fill='both', expand=True)
 
@@ -32,9 +39,7 @@ def returnMenuOrderView(parent, session, OrderId=None, Option=None):
     logo_image = Image.open(dirLogoApp)
     LogoApp = ctk.CTkImage(logo_image, size=(80, 80))
 
-    Name = session.user.FirstName
-    Db = session.DataBase.getInstance()
-    ListProducts = Db.getAllProducts()
+
 
     # Header
     header_frame = ctk.CTkFrame(ventana, fg_color=Bg2)
@@ -88,28 +93,50 @@ def returnMenuOrderView(parent, session, OrderId=None, Option=None):
     #Lista para eliminar los productos que ya existen y cuano se cargue primero se haga un bulkdelete y despues un bulkinsert
     ListOldProducts = []
     FlagQuery = None
-    if OrderId is None:
+    if OrderId is None: #SI NO EXISTE LA ORDEN se considera como nueva
         print("No. Orden: ", OrderId)
         item1 = Tblgrid.insert("", ctk.END, text="Productos")
         FlagQuery = False
-    else:
-        print("No. Orden: ", OrderId)
+
+
+
+
+
+
+    else: #SI YA EXISTE LA ORDEN
+        print("No. Orden: ", OrderId, "IdEmployee: ", UserIdEmployee, " IdSession: ", UserId)
         item1 = Tblgrid.insert("", ctk.END, text="Productos")
-        ListSale = Db.getAllSalesByOrderId(OrderId, UserId)
-        ListOldProducts = ListSale
-        for i, v in enumerate(ListSale):
-            aux = findProductById(ListProducts, v.ProductId)
-            Tblgrid.insert("", ctk.END, text=f"{1}", values=(aux.Item, aux.Price))
-            FlagQuery = True
+        if (parent.rol ==True): #estamos en el rol de administrador por lo que necesitamos  el id del empleado
+            print("consulta sales OrderId: ", OrderId, " UserIdFindSales: ", UserIdEmployee)
+            ListSale = session.DataBase.getAllSalesByOrderIdAndUserId(OrderId, UserIdEmployee)  #simplemente pasamos el id del usuario en vez del de la session
+            ListOldProducts = ListSale
+            for i, v in enumerate(ListSale):
+                aux = findProductById(ListProducts, v.ProductId)
+                Tblgrid.insert("", ctk.END, text=f"{1}", values=(aux.Item, aux.Price))
+                FlagQuery = True
+            pass
+
+
+        else: #caso contrario estamos en el rol de empleado por lo que no hacemos modificaciones
+            print("consulta sales OrderId: ", OrderId, " UserIdFindSales: ", UserId)
+            ListSale = session.DataBase.getAllSalesByOrderIdAndUserId(OrderId, UserId)
+            ListOldProducts = ListSale
+            for i, v in enumerate(ListSale):
+                aux = findProductById(ListProducts, v.ProductId)
+                Tblgrid.insert("", ctk.END, text=f"{1}", values=(aux.Item, aux.Price))
+                FlagQuery = True
+
+
+
     Tblgrid.pack(fill='both', expand=True)
     btn_BackToMenuView = ctk.CTkButton(ventana, text="Volver al menu", command=lambda: parent.menuView(), font=(FontText))
     btn_BackToMenuView.grid(row=2, column=0, padx=10, pady=20, sticky='ew')
-    btn_InvoiceView = ctk.CTkButton(ventana, text="Pedir nota", command=lambda: TakeOrder(parent,session,Tblgrid, OrderId, ListProducts, UserId, ListOldProducts, FlagQuery), font=(FontText))
+    btn_InvoiceView = ctk.CTkButton(ventana, text="Pedir nota", command=lambda: TakeOrder(parent,session,Tblgrid, OrderId, ListProducts, UserId, ListOldProducts, FlagQuery, UserIdEmployee), font=(FontText))
     btn_InvoiceView.grid(row=2, column=1, padx=10, pady=20, sticky='ew')
     return ventana
 
 
-def TakeOrder(parent, session, Tblgrid, OrderId, ListProducts, UserId, ListOldProducts, FlagQuery):
+def TakeOrder(parent, session, Tblgrid, OrderId, ListProducts, UserId, ListOldProducts, FlagQuery, UserIdEmployee):
     if OrderId:  # cuando se seleccione una orden que ya exista
         items = Tblgrid.get_children()
         print(OrderId)
@@ -120,22 +147,35 @@ def TakeOrder(parent, session, Tblgrid, OrderId, ListProducts, UserId, ListOldPr
                 product_name = values[0]
                 product_id = findIdByProductName(ListProducts, product_name)
                 if product_id:
-                    aux = Models.Sales.Sales(UserId, OrderId, product_id)
-                    ListSales.append(aux)
+                    if (UserIdEmployee):# si existe el useridemployee le damos preferencia a ese
+                        aux = Models.Sales.Sales(UserIdEmployee, OrderId, product_id)
+                        ListSales.append(aux)
+                    else:
+                        aux = Models.Sales.Sales(UserId, OrderId, product_id)
+                        ListSales.append(aux)
+        if (UserIdEmployee):#si no es null id del IdEmployee se hace el insert de sus sales
+            OrderObjId = session.DataBase.deleteSalesWithOrderId(ListSales, ListOldProducts, UserIdEmployee, OrderId)
+            if OrderObjId == OrderId:
+                print(OrderObjId[0], OrderId)
+                flag2 = session.DataBase.InsertSalesWithOrderId(ListSales, ListOldProducts, UserIdEmployee, OrderId)
+                parent.menuView()
+                messagebox.showinfo("Exito OPERACION ADMINISTRADOR", f"Orden actualizada con éxito del usuario con id {UserIdEmployee}")
+            else:
+                messagebox.showerror("Error OPERACION ADMINISTRADOR", f"No se pudo realizar la operación del usuario con id{UserIdEmployee}")
+        else: #si es nulo signofica que estamos haciendo una propia del usuario y no de un 3ro como en el caso anterior
+            OrderObjId = session.DataBase.deleteSalesWithOrderId(ListSales, ListOldProducts, UserId, OrderId)
+            if OrderObjId == OrderId:
+                print(OrderObjId[0], OrderId)
+                flag2 = session.DataBase.InsertSalesWithOrderId(ListSales, ListOldProducts, UserId, OrderId)
+                parent.menuView()
+                messagebox.showinfo("Exito OPERACION EMPLOYEE", "Orden actualizada con éxito")
+            else:
+                messagebox.showerror("Error OPERACION EMPLOYEE", "No se pudo realizar esta operación")
 
-        OrderObjId = session.DataBase.deleteSalesWithOrderId(ListSales, ListOldProducts, UserId, OrderId)
-        if OrderObjId == OrderId:
-            print(OrderObjId[0], OrderId)
-            flag2 = session.DataBase.InsertSalesWithOrderId(ListSales, ListOldProducts, UserId, OrderId)
-            parent.menuView()
-            messagebox.showinfo("Exito", "Orden actualizada con éxito")
-        else:
-            messagebox.showerror("Error", "No se pudo realizar esta operación")
 
 
 
-
-    else:  # cuando sea una nueva orden
+    else:  # cuando sea una nueva orden #esto solo lo puede agregar el usuario de la sesion
         items = Tblgrid.get_children()
         ListSales = []
         for item in items:
@@ -157,6 +197,16 @@ def TakeOrder(parent, session, Tblgrid, OrderId, ListProducts, UserId, ListOldPr
 
 
 # Resto del código permanece igual
+
+
+
+def configForNewSale():
+    pass
+def configForSaleThatExists():
+    pass
+
+
+
 
 def findIdByProductName(ListProducts, ProductName):
     for product in ListProducts:

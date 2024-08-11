@@ -26,13 +26,6 @@ def ReturnMenuView(parent, session):
     LogoApp = ctk.CTkImage(logo_image, size=(80, 80))
 
     Name = session.user.FirstName
-    #RolUser = session.user.RolId
-    #RolesPermitidos = session.DataBase.getInstance().getAllRol()
-    #RolConfigAdmin, RolConfigEmployee = IH.enumRol()
-    #flagRol = False
-    #for i, v in enumerate(RolesPermitidos):
-    #    if (RolUser == v.RolId and RolConfigAdmin == v.NameRol):
-    #        flagRol = True
 
     # <editor-fold desc="Header">
     # Frame para el encabezado
