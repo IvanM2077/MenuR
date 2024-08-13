@@ -399,6 +399,52 @@ class DB:
     #----------------------------------------------------------------------------------------------
     # </editor-fold>
     #----------------------------------------------------------------------------------------------
+    # <editor-fold desc="QueryInvoice">
+    def confirmPayOrderByEmployee(self, OrderId):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute(f"UPDATE {self.TableOrder} SET Payment = 1 WHERE OrderId = ?", (OrderId,))
+            cur.connection.commit()
+            return True
+        except sq.Error as e:
+            self.connection.rollback()
+            print("Error en la funcion confirmPayOrderByEmployee debido a: ", e)
+            return False
+
+    def confirmPayOrderByAdministrator(self, OrderId):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute(f"UPDATE {self.TableOrder} SET PaymentConfirm = 1 WHERE OrderId = ?", (OrderId,))
+            cur.connection.commit()
+            return True
+        except sq.Error as e:
+            self.connection.rollback()
+            print("Error en la funcion confirmPayOrderByAdministrator debido a: ", e)
+            return False
+
+    def getStatus(self, OrderId):
+        try:
+            cur = self.getConnection().cursor()
+            cur.execute(f"SELECT * FROM {self.TableOrder} WHERE OrderId = ?", (OrderId,))
+            Aux = cur.fetchone()
+            cur.connection.commit()
+            OrderEstatus =None
+            if Aux:
+                OrderEstatus = Models.Orders.Orders(Aux[0],Aux[1],Aux[2],Aux[3])
+                return OrderEstatus
+            return OrderEstatus
+        except sq.Error as e:
+            self.connection.rollback()
+            print("Error en la función getStatus: ", e)
+            return None
+    #----------------------------------------------------------------------------------------------
+    # <editor-fold desc="EstatusOrder">
+
+    # </editor-fold>
+
+
+    # </editor-fold>
+    #----------------------------------------------------------------------------------------------
     # <editor-fold desc="CommonQuery">
     def getAllProducts(self):
         try:

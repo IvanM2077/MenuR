@@ -97,13 +97,13 @@ def ReturnSelectorView(parent, session, option):
         btn_addToOrderView = ctk.CTkButton(ventana, text="Add 2 Order", command=lambda: viewAddProductToOrder(parent, session,Tblgrid, dictionary), font=(FontText))
         btn_addToOrderView.grid(row=6, column=6, columnspan=1, padx=10, pady=20, sticky='ew')
     if option == 3:  # si selecciona la opcion 3
-        btn_InvoiceView = ctk.CTkButton(ventana, text="Invoice", command=lambda: viewGetInvoiceOrder(parent, Tblgrid), font=(FontText))
+        btn_InvoiceView = ctk.CTkButton(ventana, text="Invoice", command=lambda: viewGetInvoiceOrder(parent, session,Tblgrid), font=(FontText))
         btn_InvoiceView.grid(row=6, column=6, columnspan=1, padx=10, pady=20, sticky='ew')
     if option == 4:
-        btn_InvoiceView = ctk.CTkButton(ventana, text="Pay", command=lambda: viewPayOrder(parent, Tblgrid), font=(FontText))
+        btn_InvoiceView = ctk.CTkButton(ventana, text="Pay", command=lambda: viewPayOrder(parent, session,Tblgrid), font=(FontText))
         btn_InvoiceView.grid(row=6, column=6, columnspan=1, padx=10, pady=20, sticky='ew')
     if option == 5:
-        btn_InvoiceView = ctk.CTkButton(ventana, text="Pay Confirm", command=lambda: viewPayConfirmOrder(parent, Tblgrid), font=(FontText))
+        btn_InvoiceView = ctk.CTkButton(ventana, text="Pay Confirm", command=lambda: viewPayConfirmOrder(parent, session,Tblgrid), font=(FontText))
         btn_InvoiceView.grid(row=6, column=6, columnspan=1, padx=10, pady=20, sticky='ew')
 
     btn_BackToMenuView = ctk.CTkButton(ventana, text="Volver al menu", command=lambda: parent.menuView(), font=(FontText))
@@ -118,14 +118,11 @@ def viewNewOrder(parent):
 
 def viewAddProductToOrder(parent, session, Tblgrid, dictionary):
     selected_item = Tblgrid.selection()
-
     if not selected_item:
         messagebox.showwarning("Error FUNCION AGREGAR PRODUCTO", "Debe seleccionar una orden válida")
         return
-
     item_values = Tblgrid.item(selected_item)
     order_id = item_values['text']
-
     if not parent.rol:
         print(f"Orden seleccionada: {order_id}")
         parent.menuOrderView(OrderId=order_id, UserIdEmployee=None)
@@ -134,52 +131,43 @@ def viewAddProductToOrder(parent, session, Tblgrid, dictionary):
         if UserIdEmployee is None:
             messagebox.showwarning("Error FUNCION AGREGAR PRODUCTO", "No se pudo encontrar un empleado en la orden seleccionada")
             return
-
         print("Id Employee:", UserIdEmployee, "Id sesion:", session.user.UserId)
         parent.menuOrderView(OrderId=order_id, UserIdEmployee=UserIdEmployee)
 
 
-def viewGetInvoiceOrder(parent, Tblgrid ):
+def viewGetInvoiceOrder(parent, session, Tblgrid ):
     selected_item = Tblgrid.selection()
-    if selected_item and parent.rol == False:
-        item_values = Tblgrid.item(selected_item)
-        order_id = item_values['No. Orden']
-        print(f"Orden seleccionada: {order_id}")
-        parent.invoiceView(OrderId=order_id, UserIdEmployee=None)
-    if (selected_item and parent.rol):
-        UserIdEmployee = item_values['values'][2]  # Assuming UserIdEmployee is in the third column
-        parent.menuOrderView(OrderId=order_id, UserIdEmployee=UserIdEmployee)
-        pass
-    else:
-        messagebox.showwarning("Error OBTENER INVOICE", "Debe seleccionar una orden válida")
+    if not selected_item:
+        messagebox.showwarning("Error FUNCION OBTENER INVOICE", "Debe seleccionar una orden válida")
+        return
+    item_values = Tblgrid.item(selected_item)
+    order_id = item_values['text']
+    Opt ="nota"
+    print(f"Orden seleccionada: {order_id}")
+    parent.invoiceView(OrderId=order_id, Option=Opt)
 
-def viewPayOrder(parent, Tblgrid):
-    selected_item = Tblgrid.selection()
-    if selected_item:
-        item_values = Tblgrid.item(selected_item)
-        order_id = item_values['text']
-        print(f"Orden seleccionada: {order_id}")
-        parent.menuOrderView(Option=4, OrderId=order_id)
-    if (selected_item and parent.rol):
-        UserIdEmployee = item_values['values'][2]  # Assuming UserIdEmployee is in the third column
-        parent.menuOrderView(OrderId=order_id, UserIdEmployee=UserIdEmployee)
-        pass
-    else:
-        messagebox.showwarning("Error PAY ORDER", "Debe seleccionar una orden válida")
 
-def viewPayConfirmOrder(parent, Tblgrid):
+def viewPayOrder(parent, session,Tblgrid):
     selected_item = Tblgrid.selection()
-    if selected_item:
-        item_values = Tblgrid.item(selected_item)
-        order_id = item_values['text']
-        print(f"Orden seleccionada: {order_id}")
-        parent.menuOrderView(Option=5, OrderId=order_id)
-    if (selected_item and parent.rol):
-        UserIdEmployee = item_values['values'][2]  # Assuming UserIdEmployee is in the third column
-        parent.menuOrderView(OrderId=order_id, UserIdEmployee=UserIdEmployee)
-        pass
-    else:
-        messagebox.showwarning("Error CONFIRMAR ORDEN", "Debe seleccionar una orden válida")
+    if not selected_item:
+        messagebox.showwarning("Error FUNCION PAY ORDER", "Debe seleccionar una orden válida")
+        return
+    item_values = Tblgrid.item(selected_item)
+    order_id = item_values['text']
+    Opt ="pago"
+    print(f"Orden seleccionada: {order_id}")
+    parent.invoiceView(OrderId=order_id, Option=Opt)
+
+def viewPayConfirmOrder(parent, session,Tblgrid):
+    selected_item = Tblgrid.selection()
+    if not selected_item:
+        messagebox.showwarning("Error FUNCION PAY ORDER", "Debe seleccionar una orden válida")
+        return
+    item_values = Tblgrid.item(selected_item)
+    order_id = item_values['text']
+    Opt ="pago"
+    print(f"Orden seleccionada: {order_id}")
+    parent.invoiceView(OrderId=order_id, Option=Opt)
 
 
 def convertListModelOrders(ListOfOrders, listNoPaid, listProcess, listPaid):

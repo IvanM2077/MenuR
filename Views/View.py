@@ -7,6 +7,7 @@ import Views.RejectView as RV
 import Views.LoginView as LV
 import Views.SelectorOrder as SO
 import Views.NewUserView as NUW
+import Views.waitingView as WV
 from Infraestructure import ViewConfig as Config
 from Models import DB as Database
 from Models.Session import Session
@@ -61,15 +62,19 @@ class App(ctk.CTk):
             menuOrderView = MOV.returnMenuOrderView(self, self.session, OrderId, UserIdEmployee)
             self.show_view(menuOrderView)
 
-    def invoiceView(self, OrderId =None, UserIdEmployee=None):
+    def invoiceView(self, OrderId =None, Option=None):
         if self.PermissionLogin:
-            invoiceView = IV.ReturnInvoiceView(self, self.session, OrderId, UserIdEmployee)
+            invoiceView = IV.ReturnInvoiceView(self, self.session, OrderId, Option)
             self.show_view(invoiceView)
 
-    def confirmView(self):
+    def confirmView(self,OrderId):
         if self.PermissionLogin:
             confirmView = CV.ReturnConfirmView(self, self.session)
             self.show_view(confirmView)
+    def waitingView(self,OrderId):
+        if self.PermissionLogin:
+            waitingView = WV.returnWaitingView(self, self.session, OrderId)
+            self.show_view(waitingView)
 
     def rejectView(self):
         if self.PermissionLogin:
