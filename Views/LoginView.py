@@ -129,6 +129,8 @@ def verifyEmailAndPass(parent, TextBoxEmail, TextBoxPassword):
                 parent.menuView()
             if User.Email == email and User.Password != PasswordSubmit:
                 messagebox.showwarning("Advertencia", "Contraseña Incorrecta")
+            else:
+                messagebox.showwarning("Advertencia", "Contraseña Incorrecta")
         else:
             messagebox.showwarning("Advertencia", "No existe usuario  en la base de datos")
     else:

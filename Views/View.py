@@ -67,7 +67,7 @@ class App(ctk.CTk):
             invoiceView = IV.ReturnInvoiceView(self, self.session, OrderId, Option)
             self.show_view(invoiceView)
 
-    def confirmView(self,OrderId):
+    def confirmView(self):
         if self.PermissionLogin:
             confirmView = CV.ReturnConfirmView(self, self.session)
             self.show_view(confirmView)

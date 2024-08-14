@@ -19,6 +19,8 @@ version de python compatible 3.10 (estable)
 - pandas
 - matplotlib
 - scipy
+- lxml
+- pdfkit
 
 ## Como funciona
 

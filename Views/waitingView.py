@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import ttk
+from tkinter import messagebox
 import Infraestructure.Helper as IH
 import Infraestructure.ViewConfig as IV
 
@@ -12,6 +13,7 @@ def returnWaitingView(parent, session, OrderId):
     UserId = session.DataBase.FindUserIdByOrderId(OrderId)
     ListSales = session.DataBase.getAllSalesByOrderIdAndUserId(OrderId, UserId)
     ListProducts = session.DataBase.getAllProducts()
+    print(UserId, ListSales, ListProducts)
 
     # Configurar la cuadrícula
     for i in range(8):
@@ -20,7 +22,7 @@ def returnWaitingView(parent, session, OrderId):
         ventana.grid_rowconfigure(i, weight=1)
 
     # Label de bienvenida
-    lbl = ctk.CTkLabel(ventana, text="Vista de Invoice", bg_color=Bg2, text_color=TextColor, font=FontTitle)
+    lbl = ctk.CTkLabel(ventana, text="Vista de espera", bg_color=Bg2, text_color=TextColor, font=FontTitle)
     lbl.grid(row=1, column=1, columnspan=6, padx=10, pady=20, sticky='n')
 
 
@@ -30,7 +32,7 @@ def returnWaitingView(parent, session, OrderId):
     btn_BackToMenuView = ctk.CTkButton(ventana, text="Volver al menu", command=lambda: parent.menuView(), font=FontText)
     btn_BackToMenuView.grid(row=6, column=2, columnspan=1, padx=10, pady=20, sticky='ew')
 
-    btn_PayConfirm = ctk.CTkButton(ventana, text="Actualizar orden", command=lambda: updateWindow(parent, OrderId), font=FontText)
+    btn_PayConfirm = ctk.CTkButton(ventana, text="Obtener estatus de orden", command=lambda: updateWindow(parent, session, OrderId), font=FontText)
     btn_PayConfirm.grid(row=6, column=6, columnspan=1, padx=10, pady=20, sticky='ew')
 
 
@@ -38,6 +40,15 @@ def returnWaitingView(parent, session, OrderId):
 
     return ventana
 
-def updateWindow(parent, OrderId):
+def updateWindow(parent, session, OrderId):
+    Estatus = session.DataBase.getStatus(OrderId)
+    if Estatus:
+        if Estatus.PaymentConfirm == 1:
+            messagebox.showinfo("Estatus", "Confirmado")
+            parent.confirmView()
+        else:
+            messagebox.showwarning("Estatus","Sin confirmar")
+            parent.rejectView()
 
-    pass
+    else:
+        messagebox.showerror("Ocurrio un error", "No se pudo obtener la inforación de la orden. Intente nuevamente")
