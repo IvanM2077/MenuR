@@ -71,6 +71,9 @@ def ReturnMenuView(parent, session):
     if(parent.rol):
         btn_ConfirmPay = ctk.CTkButton(buttons_frame, text="Confirm Pay", fg_color=Btn1, command=lambda: confirmPayView(parent), font=FontText, height=btn_height)
         btn_ConfirmPay.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
+    if(parent.rol):
+        btn_ConfirmPay = ctk.CTkButton(buttons_frame, text="Administator Config", fg_color=Btn1, command=lambda: AdminitratorView(parent), font=FontText, height=btn_height)
+        btn_ConfirmPay.grid(row=1, column=2, padx=10, pady=10, sticky='ew')
     # </editor-fold>
 
     def newOrder(parent):
@@ -92,5 +95,7 @@ def ReturnMenuView(parent, session):
     def confirmPayView(parent):
         parent.currentOption(5)
         parent.selectorView(parent.currenOpt)
+    def AdminitratorView(parent):
+        parent.AdministratorConfigView()
 
     return ventana, None

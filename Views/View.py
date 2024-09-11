@@ -8,6 +8,7 @@ import Views.LoginView as LV
 import Views.SelectorOrder as SO
 import Views.NewUserView as NUW
 import Views.waitingView as WV
+import Views.AdministratorConfigView as ACW
 from Infraestructure import ViewConfig as Config
 from Models import DB as Database
 from Models.Session import Session
@@ -71,6 +72,10 @@ class App(ctk.CTk):
         if self.PermissionLogin:
             confirmView = CV.ReturnConfirmView(self, self.session)
             self.show_view(confirmView)
+    def AdministratorConfigView(self):
+        if self.PermissionLogin:
+            AdministratorConfigView = ACW.ReturnAdministratorView(self, self.session)
+            self.show_view(AdministratorConfigView)
     def waitingView(self,OrderId):
         if self.PermissionLogin:
             waitingView = WV.returnWaitingView(self, self.session, OrderId)
