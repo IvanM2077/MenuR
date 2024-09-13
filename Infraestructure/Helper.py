@@ -69,8 +69,11 @@ def encrypt(cadena):
 
 
 #<editor-fold desc="Enum">
-def enumRol():
+def enumRol(rolName):
     employeePermission ="Employee"
     adminPermission = "Admin"
-    return employeePermission, adminPermission
+    if rolName == employeePermission:
+        return False
+    if rolName == adminPermission:
+        return True
 #</editor-fold>

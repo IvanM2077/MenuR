@@ -118,16 +118,30 @@ def verifyEmailAndPass(parent, TextBoxEmail, TextBoxPassword):
             if User.Email == email and User.Password == PasswordSubmit:
                 RolUser = User.RolId
                 RolesPermitidos = session.DataBase.getAllRol()
-                RolConfigAdmin, RolConfigEmployee = IH.enumRol()
-                flagRol = False
-                for i, v in enumerate(RolesPermitidos):
-                    if (RolUser == v.RolId and RolConfigAdmin == v.NameRol):
-                        flagRol = True
-                        parent.rol = flagRol
+                Dict = {}
+                for v in RolesPermitidos:
+                    Dict[v.RolId] = v.NameRol
+                #utilizamos un dictionary porque devolverá el valor en string del usuario
+                rolnameAux = Dict.get(User.RolId)
+
+                if rolnameAux is None:
+                    messagebox.showwarning("Advertencia", "El rol del usuario no es válido.")
+                    return
+
+                # Verificamos si el rol es "Admin" o "Employee"
+                flagRol = IH.enumRol(rolnameAux)
+                if flagRol is None:
+                    messagebox.showwarning("Advertencia", "Permiso de rol no definido.")
+                    return
+
+                # Si el rol es válido, logear al usuario
                 messagebox.showinfo("Éxito", "Login exitoso")
                 session.user = User
                 session.rol = flagRol
+                parent.rol = flagRol
                 parent.PermissionLogin = True
+
+                # Mostrar el menú con base en los permisos
                 parent.menuView()
 
             else:

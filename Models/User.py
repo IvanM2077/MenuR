@@ -9,6 +9,9 @@ class User:
         self.Password = Password
         self.RolId = RolId
 
+    def __str__(self):
+        return f"{self.UserId} --> {self.FirstName}"
+
 #clase empleado que podrá realizar las peticiones y tomar las ordenes
 '''
 La diferencia entre estos residirá en los métodos para poder accesar 

@@ -2,7 +2,7 @@
 #<editor-fold desc="CreationDatabase">
 #CREACIÓN DE LA BASE DE DATOS AL INICIALIZAR las tablas y consulta toda en una clase
 import sqlite3 as sq
-
+import os
 import Models.User
 import Models.Orders
 import Models.Rol
@@ -30,7 +30,15 @@ class DB:
         self.TableProducts = TableProducts
         self.TableRol = TableRol
         self.TableSale = TableSale
-        self.Initialiate()
+        # Con esto solo se instanciara una unica vez la bd para evitar errores
+        if not os.path.exists(self.nameDB):
+            print("Base de datos no encontrada. Creando nueva base de datos...")
+            self.Initialiate()  # Solo inicializa y crea tablas si no existe
+            print("SingletonError")
+        else:
+            self.getConnection()  # Solo establece conexión si ya existe
+            print("Obteniendo la instancia Singleton y no se creó nuevamente la BD")
+
 
     def Initialiate(self):
         self.getConnection()
@@ -61,9 +69,12 @@ class DB:
             cur.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.TableRol} (
                     RolId INTEGER PRIMARY KEY AUTOINCREMENT,
-                    NameRol TEXT NOT NULL
+                    NameRol TEXT NOT NULL UNIQUE
                 )
             ''')
+            # Insertar los roles solo si no están presentes
+            cur.execute(f'''INSERT OR IGNORE INTO {self.TableRol} (NameRol) VALUES ('Employee')''')
+            cur.execute(f'''INSERT OR IGNORE INTO {self.TableRol} (NameRol) VALUES ('Admin')''')
             self.connection.commit()
         except sq.Error as e:
             print(f"Error al crear la tabla {self.TableRol}: {e}")
@@ -462,6 +473,22 @@ class DB:
                 print("No existe valores en la db")
         except sq.Error as e:
             print("Error al consultar los productos: ", e)
+    def getAllUsers(self):
+        cur = self.getConnection()
+        try:
+            con = cur.cursor()
+            con.execute(f"SELECT * FROM {self.TableUser}")
+            fetchUser = con.fetchall()
+            ListUser = []
+            for v in fetchUser:
+                aux = Models.User.User(v[0], v[1], v[2], v[3], v[4], v[5])
+                ListUser.append(aux)
+            cur.commit()
+            return ListUser
+        except sq.Error as e:
+            cur.rollback()
+            return None
+
     # </editor-fold>
     #----------------------------------------------------------------------------------------------
 

@@ -75,7 +75,7 @@ def verificar_entradas(parent, TextBoxFName, TextBoxLName, TextBoxAge, TextBoxEm
     TextBoxPasswordSubmit = IH.encrypt(TextBoxPassword.get())  # Encriptar la contraseña
 
     if FN and LN and A and E and P:
-        new_user = MU.User(0, TextBoxFName.get(), TextBoxLName.get(), TextBoxEmail.get(), TextBoxPasswordSubmit, 0)
+        new_user = MU.User(0, TextBoxFName.get(), TextBoxLName.get(), TextBoxEmail.get(), TextBoxPasswordSubmit, 1)
         session = Models.Session.Session.getInstance()
         SearchUser = session.DataBase.consultPasswordAndEmail(TextBoxEmail.get(), TextBoxPasswordSubmit)
         if SearchUser is not None:
